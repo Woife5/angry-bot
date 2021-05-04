@@ -15,29 +15,37 @@ const prefix = "?angry";
 const botID = "824235133284253736";
 
 /**
+ * Amount of angry reactions per message
+ */
+const angryAmount = 5;
+
+/**
+ * Api location of the database handler
+ */
+const apiUrl = "http://wolfberry:88/api/";
+
+/**
  * Allow any user to issue a command that searches through every message on the server
  */
 let allowLeaderboardCommand = true;
 
 /**
- * Amount of angry reactions per message
+ * Remember the daily angry emoji of all server users
  */
-const angryAmount = 5;
+let angryTarot = {};
 let angryTarotTexts;
 
 /**
- * Remember the daily angry emoji of all server users
+ * A list of all angry emojis on the official angry discord: https://discord.gg/pZrBRA75wz
  */
- let angryTarot = {};
-
 const angrys = [
     "<:angry1:824231077588762634>",
     "<:angry2:824231091556188170>",
     "<:angry3:824231102725488640>",
     "<:angry4:824231112715796491>",
-    "<:angry5:824231123298025502>", 
+    "<:angry5:824231123298025502>",
     "<:angry6:824231131813511179>",
-    "<:angry7:824231141149507594>", 
+    "<:angry7:824231141149507594>",
     "<:angry8:824231151417688085>",
     "<:angry9:824231161710247937>",
     "<:angry10:824231171352297512>",
@@ -96,6 +104,7 @@ readFile("settings.json").then(fileBuffer => {
     process.exit(1);
 });
 
+// Read angry tarot texts into an array
 readFile("angry-tarot.json").then(fileBuffer => {
     angryTarotTexts = JSON.parse(fileBuffer.toString());
 }).catch(error => {
@@ -106,235 +115,239 @@ readFile("angry-tarot.json").then(fileBuffer => {
 client.on("message", (msg) => {
 
     // Only react on messages not sent by the bot
-    if(msg.author.id != botID)
-    {
-        //* Handle commands
-        if(msg.content.startsWith(prefix)) {
-            // Message is a command
-            const args = msg.content.slice(prefix.length).trim().split(/ +/);
-            const command = args.shift().toLowerCase();
+    if(msg.author.id == botID)
+        return;
 
-            if(!command) {
-                let commands = "Possible Commands:\n";
-                commands += "`" + prefix + " tarot` - Get your daily angry\n";
-                commands += "`" + prefix + " tarotcount` - See the number tarots I have read\n";
-                commands += "`" + prefix + " count` - Get total amount of angry reactions\n";
-                commands += "`" + prefix + " emojilist` - Get top angry emojis\n";
-                commands += "`" + prefix + " topspammer` - Get top angry spammers\n";
+    //* Handle commands
+    if(msg.content.startsWith(prefix)) {
+        // Message is a command
+        const args = msg.content.slice(prefix.length).trim().split(/ +/);
+        const command = args.shift().toLowerCase();
 
-                if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
-                    commands += "`" + prefix + " flushtarot` - Remove all currently saved tarot emojis\n";
-                }
-
-                msg.channel.send(commands);
-            }
-
-            if(command === "tarot") {
-                // Get random angry emoji and store it for this user
-                if(angryTarot[msg.author.id] && angryTarot[msg.author.id].isValid()) {
-                    msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].getData()]}.\n${angryTarotTexts[angryTarot[msg.author.id].getData()]}\n\nYou can get a new one tomorrow (in ${angryTarot[msg.author.id].getTimeLeftMin()} Minutes).`);
-                } else {
-                    // Assign a new random daily angry emoji
-                    let dailyAngry = Math.floor(Math.random() * angrys.length);
-                    angryTarot[msg.author.id] = new Cache(dailyAngry, (new Date().setHours(24,0,0,0) - Date.now()));
-                    incrementTarotCounter();
-
-                    msg.reply(`Let me sense your angry...`);
-                    setTimeout(() => {
-                        msg.reply(`Your angry today is angry${dailyAngry+1} ${angrys[dailyAngry]}\n\n${angryTarotTexts[dailyAngry]}`);
-                    }, 2000);
-                }
-            }
+        if(!command) {
+            let commands = "Possible Commands:\n";
+            commands += "`" + prefix + " tarot` - Get your daily angry\n";
+            commands += "`" + prefix + " tarotcount` - See the number tarots I have read\n";
+            commands += "`" + prefix + " count` - Get total amount of angry reactions\n";
+            commands += "`" + prefix + " emojilist` - Get top angry emojis\n";
+            commands += "`" + prefix + " topspammer` - Get top angry spammers\n";
 
             if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
-                if(command === "flushtarot") {
-                    angryTarot = {};
-                    msg.channel.send("All saved Tarots have been cleared!");
-                }
+                commands += "`" + prefix + " flushtarot` - Remove all currently saved tarot emojis\n";
             }
 
-            if(command === "count") {
-                getAngryCount()
-                    .then((amount) => {
-                        msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
-                    }).catch((err) => {
-                        msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
-                        console.error(err);
-                    });
-            }
+            msg.channel.send(commands);
+        }
 
-            if(command === "tarotcount") {
-                getTarotCount()
-                    .then((amount) => {
-                        msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
-                    }).catch((err) => {
-                        msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
-                        console.error(err);
-                    });
-            }
+        if(command === "tarot") {
+            // Get random angry emoji and store it for this user
+            if(angryTarot[msg.author.id] && angryTarot[msg.author.id].isValid()) {
+                msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].getData()]}.\n${angryTarotTexts[angryTarot[msg.author.id].getData()]}\n\nYou can get a new one tomorrow (in ${angryTarot[msg.author.id].getTimeLeftMin()} Minutes).`);
+            } else {
+                // Assign a new random daily angry emoji
+                let dailyAngry = Math.floor(Math.random() * angrys.length);
+                angryTarot[msg.author.id] = new Cache(dailyAngry, (new Date().setHours(24,0,0,0) - Date.now()));
+                incrementTarotCounter();
 
-            if(command === "emojilist") {
-                if(allowLeaderboardCommand) {
-                    allowLeaderboardCommand = false;
-                    rankAngryEmojis(msg.channel);
-                } else {
-                    msg.reply(`I am still working on the last one ${angrys[0]}`);
-                }
-            }
-
-            if(command === "topspammer") {
-                if(allowLeaderboardCommand) {
-                    allowLeaderboardCommand = false;
-                    rankAngrySpammers(msg.channel);
-                } else {
-                    msg.reply(`I am still working on the last one ${angrys[0]}`);
-                }
+                msg.reply(`Let me sense your angry...`);
+                setTimeout(() => {
+                    msg.reply(`Your angry today is angry${dailyAngry+1} ${angrys[dailyAngry]}\n\n${angryTarotTexts[dailyAngry]}`);
+                }, 2000);
             }
         }
-        //*/
 
-        //* Be extra angry if divotkey is mentioned
-        if(msg.cleanContent.toLocaleLowerCase().includes("roman") || msg.cleanContent.toLocaleLowerCase().includes("divotkey"))
-        {
-            msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}`);
-            msg.channel.send(":clock10: :rolling_eyes:");
+        if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
+            if(command === "flushtarot") {
+                angryTarot = {};
+                msg.channel.send("All saved Tarots have been cleared!");
+            }
         }
-        //*/
 
-        //* React with WOLFI when its me lol
-        if(msg.author.id === "267281854690754561")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🇼"))
-                .then(() => msg.react("🇴"))
-                .then(() => msg.react("🇱"))
-                .then(() => msg.react("🇫"))
-                .then(() => msg.react("🇮"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-                incrementAngryCounter(2);
-            return;
+        if(command === "count") {
+            getAngryCount()
+                .then((amount) => {
+                    msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
+                }).catch((err) => {
+                    msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
+                    console.error(err);
+                });
+        }
 
+        if(command === "tarotcount") {
+            getTarotCount()
+                .then((amount) => {
+                    msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
+                }).catch((err) => {
+                    msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
+                    console.error(err);
+                });
         }
-        //*/
 
-        //* React with FELIX when its felix
-        if(msg.author.id === "138678366730452992")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🇫"))
-                .then(() => msg.react("🇪"))
-                .then(() => msg.react("🇱"))
-                .then(() => msg.react("🇮"))
-                .then(() => msg.react("🇽"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-                incrementAngryCounter(2);
-            return;
+        if(command === "emojilist") {
+            if(allowLeaderboardCommand) {
+                allowLeaderboardCommand = false;
+                rankAngryEmojis(msg.channel);
+            } else {
+                msg.reply(`I am still working on the last one ${angrys[0]}`);
+            }
         }
-        //*/
 
-        //* React with LUMI when its pauli
-        if(msg.author.id === "297031236860510208")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🇱"))
-                .then(() => msg.react("🇺"))
-                .then(() => msg.react("🇲"))
-                .then(() => msg.react("🇮"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-            incrementAngryCounter(2);
-            return;
+        if(command === "topspammer") {
+            if(allowLeaderboardCommand) {
+                allowLeaderboardCommand = false;
+                rankAngrySpammers(msg.channel);
+            } else {
+                msg.reply(`I am still working on the last one ${angrys[0]}`);
+            }
         }
-        //*/
-        
-        //* React with LAURA when its laura
-        if(msg.author.id === "630465849270075402")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🇱"))
-                .then(() => msg.react("🇦"))
-                .then(() => msg.react("🇺"))
-                .then(() => msg.react("🇷"))
-                .then(() => msg.react("🅰️"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-                incrementAngryCounter(2);
-            return;
-        }
-        //*/
-
-        //* React with TOBI when its tobi
-        if(msg.author.id === "638705859123216394")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🇹"))
-                .then(() => msg.react("🇴"))
-                .then(() => msg.react("🇧"))
-                .then(() => msg.react("🇮"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-            incrementAngryCounter(2);
-            return;
-        }
-        //*/
-
-        //* React custom when its ramoni
-        if(msg.author.id === "214725217967144960")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🌻"))
-                .then(() => msg.react("👑"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-            incrementAngryCounter(2);
-            return;
-        }
-        //*/
-
-        //* React with cookie angry when its jojo
-        if(msg.author.id === "656443344486006795")
-        {
-            msg.react(angrys[0])
-                .then(() => msg.react("🍪"))
-                .then(() => msg.react(angrys[1]))
-                .catch(() => console.error("One reaction failed!"));
-            incrementAngryCounter(2);
-            return;
-        }
-        //*/
-        
-        //* React with Tintenfisch when its valentin
-        if(msg.author.id === "351375977303244800")
-        {
-            msg.react("🦑")
-                .then(() => msg.react(angrys[0]))
-                .then(() => msg.react(angrys[1]))
-                .then(() => msg.react(angrys[2]))
-                .catch(() => console.error("One reaction failed!"));
-            msg.reply(`Tintenfisch ${angrys[0]}`);
-            incrementAngryCounter(3);
-            return;
-        }
-        //*/
-
-        //* React every message with 5 angrys if the bot is angry
-        for (let i = 0; i < angryAmount; i++) {
-            msg.react(angrys[i]);
-        }
-        incrementAngryCounter(angryAmount);
-        //*/
     }
+    //*/
+
+    //* Be extra angry if divotkey is mentioned
+    if(msg.cleanContent.toLocaleLowerCase().includes("roman") || msg.cleanContent.toLocaleLowerCase().includes("divotkey"))
+    {
+        msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}`);
+        msg.channel.send(":clock10: :rolling_eyes:");
+    }
+    //*/
+
+    //* React with WOLFI when its me lol
+    if(msg.author.id === "267281854690754561")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🇼"))
+            .then(() => msg.react("🇴"))
+            .then(() => msg.react("🇱"))
+            .then(() => msg.react("🇫"))
+            .then(() => msg.react("🇮"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+            incrementAngryCounter(2);
+        return;
+
+    }
+    //*/
+
+    //* React with FELIX when its felix
+    if(msg.author.id === "138678366730452992")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🇫"))
+            .then(() => msg.react("🇪"))
+            .then(() => msg.react("🇱"))
+            .then(() => msg.react("🇮"))
+            .then(() => msg.react("🇽"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+            incrementAngryCounter(2);
+        return;
+    }
+    //*/
+
+    //* React with LUMI when its pauli
+    if(msg.author.id === "297031236860510208")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🇱"))
+            .then(() => msg.react("🇺"))
+            .then(() => msg.react("🇲"))
+            .then(() => msg.react("🇮"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+        incrementAngryCounter(2);
+        return;
+    }
+    //*/
+    
+    //* React with LAURA when its laura
+    if(msg.author.id === "630465849270075402")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🇱"))
+            .then(() => msg.react("🇦"))
+            .then(() => msg.react("🇺"))
+            .then(() => msg.react("🇷"))
+            .then(() => msg.react("🅰️"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+            incrementAngryCounter(2);
+        return;
+    }
+    //*/
+
+    //* React with TOBI when its tobi
+    if(msg.author.id === "638705859123216394")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🇹"))
+            .then(() => msg.react("🇴"))
+            .then(() => msg.react("🇧"))
+            .then(() => msg.react("🇮"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+        incrementAngryCounter(2);
+        return;
+    }
+    //*/
+
+    //* React custom when its ramoni
+    if(msg.author.id === "214725217967144960")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🌻"))
+            .then(() => msg.react("👑"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+        incrementAngryCounter(2);
+        return;
+    }
+    //*/
+
+    //* React with cookie angry when its jojo
+    if(msg.author.id === "656443344486006795")
+    {
+        msg.react(angrys[0])
+            .then(() => msg.react("🍪"))
+            .then(() => msg.react(angrys[1]))
+            .catch(() => console.error("One reaction failed!"));
+        incrementAngryCounter(2);
+        return;
+    }
+    //*/
+    
+    //* React with Tintenfisch when its valentin
+    if(msg.author.id === "351375977303244800")
+    {
+        msg.react("🦑")
+            .then(() => msg.react(angrys[0]))
+            .then(() => msg.react(angrys[1]))
+            .then(() => msg.react(angrys[2]))
+            .catch(() => console.error("One reaction failed!"));
+        msg.reply(`Tintenfisch ${angrys[0]}`);
+        incrementAngryCounter(3);
+        return;
+    }
+    //*/
+
+    //* React every message with the set amount of angrys
+    for (let i = 0; i < angryAmount; i++) {
+        msg.react(angrys[i]);
+    }
+    incrementAngryCounter(angryAmount);
+    //*/
 });
 
 //******************************************************
 //                 HELPER FUNCTIONS
 //******************************************************
 
+/**
+ * Updates (increments) the total angry reactions counter in MongoDB.
+ * @param {Number} amount Number of angry reactions to be added to the counter
+ */
 function incrementAngryCounter(amount) {
     const body = `{"amount":${amount}}`;
-    fetch("http://wolfberry:88/api/angry-count", {
+    fetch(apiUrl + "angry-count", {
         "method": "POST",
         "body": body,
         "headers": { 
@@ -344,9 +357,13 @@ function incrementAngryCounter(amount) {
     }).catch((err) => console.error(err));
 }
 
+/**
+ * Updates (increments) the total angry tarot reading counter in MongoDB
+ * @param {Number} amount Amount of Angry tarots that should be incremented, default 1
+ */
 function incrementTarotCounter(amount = 1) {
     const body = `{"amount":${amount}}`;
-    fetch("http://wolfberry:88/api/angry-tarot-count", {
+    fetch(apiUrl + "angry-tarot-count", {
         "method": "POST",
         "body": body,
         "headers": { 
@@ -358,7 +375,7 @@ function incrementTarotCounter(amount = 1) {
 
 async function updateTotalAngryEmoji(amount) {
     const body = `{"amount":${amount}}`;
-    fetch("http://wolfberry:88/api/angry-emoji-count", {
+    fetch(apiUrl + "angry-emoji-count", {
         "method": "POST",
         "body": body,
         "headers": { 
@@ -368,9 +385,13 @@ async function updateTotalAngryEmoji(amount) {
     }).catch((err) => console.error(err));
 }
 
+/**
+ * Returns the total number of angry reactions done by the bot
+ * @returns A Promise containing the toal amount of angry reactions by the bot
+ */
 function getAngryCount() {
     let promise = new Promise((resolve, reject) => {
-        fetch("http://wolfberry:88/api/angry-count")
+        fetch(apiUrl + "angry-count")
             .then(res => res.json())
             .then(json => {
                 resolve(json.angryCount);
@@ -381,9 +402,13 @@ function getAngryCount() {
     return promise;
 }
 
+/**
+ * Returns the total number of angry tarots read by the bot
+ * @returns A Promise containing the total amount of angry tarots read by the bot
+ */
 function getTarotCount() {
     let promise = new Promise((resolve, reject) => {
-        fetch("http://wolfberry:88/api/angry-tarot-count")
+        fetch(apiUrl + "angry-tarot-count")
             .then(res => res.json())
             .then(json => {
                 resolve(json.angryTarotCount);
@@ -394,6 +419,11 @@ function getTarotCount() {
     return promise;
 }
 
+/**
+ * This function takes a dicord channel as argument and sreturns all found messages as an array
+ * @param {Channel} channel The channel that should be scraped
+ * @returns An array containing all messages in the given Channel
+ */
 async function all_messages_getter(channel) {
     const sum_messages = [];
     let last_id;

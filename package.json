@@ -1,0 +1,23 @@
+{
+  "name": "angry-bot",
+  "version": "1.0.0",
+  "description": "Angry Bot",
+  "main": "angry-bot.js",
+  "scripts": {
+    "test": "node angry-bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Woife5/angry-bot.git"
+  },
+  "author": "Wolfgang Schwendtbauer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Woife5/angry-bot/issues"
+  },
+  "homepage": "https://github.com/Woife5/angry-bot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "node-fetch": "^2.6.1"
+  }
+}

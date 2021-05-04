@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const client = new Discord.Client();
+const Cache = require("./cache.js");
 const {promises: {readFile}} = require("fs");
 
 /**
@@ -22,6 +23,12 @@ let allowLeaderboardCommand = true;
  * Amount of angry reactions per message
  */
 const angryAmount = 5;
+let angryTarotTexts;
+
+/**
+ * Remember the daily angry emoji of all server users
+ */
+ let angryTarot = {};
 
 const angrys = [
     "<:angry1:824231077588762634>",
@@ -89,6 +96,12 @@ readFile("settings.json").then(fileBuffer => {
     process.exit(1);
 });
 
+readFile("angry-tarot.json").then(fileBuffer => {
+    angryTarotTexts = JSON.parse(fileBuffer.toString());
+}).catch(error => {
+    console.error("Error reading File: " + error.message);
+    process.exit(1);
+});
 
 client.on("message", (msg) => {
 
@@ -103,10 +116,40 @@ client.on("message", (msg) => {
 
             if(!command) {
                 let commands = "Possible Commands:\n";
+                commands += "`" + prefix + " tarot` - Get your daily angry\n";
                 commands += "`" + prefix + " count` - Get total amount of angry reactions\n";
                 commands += "`" + prefix + " emojilist` - Get top angry emojis\n";
-                commands += "`" + prefix + " topspammer` - Get top angry spammers";
+                commands += "`" + prefix + " topspammer` - Get top angry spammers\n";
+
+                if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
+                    commands += "`" + prefix + " flushtarot` - Remove all currently saved tarot emojis\n";
+                }
+
                 msg.channel.send(commands);
+            }
+
+            if(command === "tarot") {
+                // Get random angry emoji and store it for this user
+                if(angryTarot[msg.author.id] && angryTarot[msg.author.id].isValid()) {
+                    msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].getData()]}.\n${angryTarotTexts[angryTarot[msg.author.id].getData()]}\n\nYou can get a new one tomorrow (in ${angryTarot[msg.author.id].getTimeLeftMin()} Minutes).`);
+                } else {
+                    // Assign a new random daily angry emoji
+                    let dailyAngry = Math.floor(Math.random() * angrys.length);
+                    angryTarot[msg.author.id] = new Cache(dailyAngry, (new Date().setHours(24,0,0,0) - Date.now()));
+                    incrementTarotCounter();
+
+                    msg.reply(`Let me sense your angry...`);
+                    setTimeout(() => {
+                        msg.reply(`Your angry today is angry${dailyAngry+1} ${angrys[dailyAngry]}\n\n${angryTarotTexts[dailyAngry]}`);
+                    }, 2000);
+                }
+            }
+
+            if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
+                if(command === "flushtarot") {
+                    angryTarot = {};
+                    msg.channel.send("All saved Tarots have been cleared!");
+                }
             }
 
             if(command === "count") {
@@ -281,6 +324,18 @@ client.on("message", (msg) => {
 function incrementAngryCounter(amount) {
     const body = `{"amount":${amount}}`;
     fetch("http://wolfberry:88/api/angry-count", {
+        "method": "POST",
+        "body": body,
+        "headers": { 
+            "Content-Type": "application/json",
+            "Content-Length": body.length,
+        },
+    }).catch((err) => console.error(err));
+}
+
+function incrementTarotCounter(amount = 1) {
+    const body = `{"amount":${amount}}`;
+    fetch("http://wolfberry:88/api/angry-tarot-count", {
         "method": "POST",
         "body": body,
         "headers": { 

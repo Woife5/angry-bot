@@ -117,6 +117,7 @@ client.on("message", (msg) => {
             if(!command) {
                 let commands = "Possible Commands:\n";
                 commands += "`" + prefix + " tarot` - Get your daily angry\n";
+                commands += "`" + prefix + " tarotcount` - See the number tarots I have read\n";
                 commands += "`" + prefix + " count` - Get total amount of angry reactions\n";
                 commands += "`" + prefix + " emojilist` - Get top angry emojis\n";
                 commands += "`" + prefix + " topspammer` - Get top angry spammers\n";
@@ -153,9 +154,19 @@ client.on("message", (msg) => {
             }
 
             if(command === "count") {
-                getAngryCounter()
+                getAngryCount()
                     .then((amount) => {
                         msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
+                    }).catch((err) => {
+                        msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
+                        console.error(err);
+                    });
+            }
+
+            if(command === "tarotcount") {
+                getTarotCount()
+                    .then((amount) => {
+                        msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
                     }).catch((err) => {
                         msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
                         console.error(err);
@@ -357,12 +368,25 @@ async function updateTotalAngryEmoji(amount) {
     }).catch((err) => console.error(err));
 }
 
-function getAngryCounter() {
+function getAngryCount() {
     let promise = new Promise((resolve, reject) => {
         fetch("http://wolfberry:88/api/angry-count")
             .then(res => res.json())
             .then(json => {
                 resolve(json.angryCount);
+            }).catch((err) => {
+                reject(err);
+            });
+    });
+    return promise;
+}
+
+function getTarotCount() {
+    let promise = new Promise((resolve, reject) => {
+        fetch("http://wolfberry:88/api/angry-tarot-count")
+            .then(res => res.json())
+            .then(json => {
+                resolve(json.angryTarotCount);
             }).catch((err) => {
                 reject(err);
             });

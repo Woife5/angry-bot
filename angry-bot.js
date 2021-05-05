@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const client = new Discord.Client();
 const Cache = require("./cache.js");
 const {promises: {readFile, writeFile}} = require("fs");
+const settings = require("./settings.json");
 
 /**
  * Prefix for all angry-commands
@@ -101,14 +102,7 @@ client.on("ready", () => {
     client.user.setActivity(`"${prefix}"`, {type: "LISTENING"});
 });
 
-// Read settings file and login client if successful
-readFile("settings.json").then(fileBuffer => {
-    const settings = JSON.parse(fileBuffer.toString());
-    client.login(settings["client-secret"]);
-}).catch(error => {
-    console.error("Error reading File: " + error.message);
-    process.exit(1);
-});
+client.login(settings["client-secret"]);
 
 // Read angry tarot texts into an array
 readFile("angry-tarot.json").then(fileBuffer => {
@@ -187,6 +181,7 @@ client.on("message", (msg) => {
                     });
             }
         }else if(command === "count") {
+            // Get amount of angry reactions
             getAngryCount()
                 .then((amount) => {
                     msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
@@ -195,6 +190,7 @@ client.on("message", (msg) => {
                     console.error(err);
                 });
         }else if(command === "tarotcount") {
+            // Get amount of tartots read
             getTarotCount()
                 .then((amount) => {
                     msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
@@ -203,6 +199,7 @@ client.on("message", (msg) => {
                     console.error(err);
                 });
         }else if(command === "emojilist") {
+            // Get list of all emojis
             if(allowLeaderboardCommand) {
                 allowLeaderboardCommand = false;
                 rankAngryEmojis(msg.channel);
@@ -211,6 +208,7 @@ client.on("message", (msg) => {
                 msg.reply(`I am still working on the last one ${angrys[0]}`);
             }
         }else if(command === "topspammer") {
+            // Get top spammer
             if(allowLeaderboardCommand) {
                 allowLeaderboardCommand = false;
                 rankAngrySpammers(msg.channel);
@@ -398,7 +396,7 @@ function loadCachedTarots() {
 
             for(let i = 0; i < keys.length; i++) {
                 const obj = data[keys[i]];
-                if(obj.lastUpdate < new Date().setHours(24,0,0,0))
+                if(obj.lastUpdate < new Date().setHours(24,0,0,0) && obj.lastUpdate > new Date().setHours(0, 0, 0, 0))
                     angryTarot[keys[i]] = new Cache(obj.data, (new Date().setHours(24,0,0,0) - Date.now()));
             }
 

@@ -134,6 +134,23 @@ client.on("message", (msg) => {
         const args = msg.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
 
+        // Admin commands
+        if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
+            if(command === "flushtarot") {
+                angryTarot = {};
+                msg.channel.send("All saved Tarots have been cleared!");
+            }
+
+            if(command === "updatereactions") {
+                updateCustomReactions();
+            }
+
+            if(command === "loadtarot") {
+                loadCachedTarots();
+                msg.channel.send("I have successfully loaded all saved tarots");
+            }
+        }
+
         if(!command) {
             let commands = "Possible Commands:\n";
             commands += "`" + prefix + " tarot` - Get your daily angry\n";
@@ -143,15 +160,14 @@ client.on("message", (msg) => {
             commands += "`" + prefix + " topspammer` - Get top angry spammers\n";
 
             if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
+                commands += "\nAdmin Commands:\n";
                 commands += "`" + prefix + " flushtarot` - Remove all currently saved tarot emojis\n";
                 commands += "`" + prefix + " loadtarot` - Load tarot from cache file\n";
                 commands += "`" + prefix + " updatereactions` - Update the internal cache of custom angry reactions\n";
             }
 
             msg.channel.send(commands);
-        }
-
-        if(command === "tarot") {
+        }else if(command === "tarot") {
             // Get random angry emoji and store it for this user
             if(angryTarot[msg.author.id] && angryTarot[msg.author.id].isValid()) {
                 msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].getData()]}.\n${angryTarotTexts[angryTarot[msg.author.id].getData()]}\n\nYou can get a new one tomorrow (in ${angryTarot[msg.author.id].getTimeLeftMin()} Minutes).`);
@@ -170,26 +186,7 @@ client.on("message", (msg) => {
                         console.error("Writing cache failed: " + JSON.stringify(err));
                     });
             }
-        }
-
-        // Admin commands
-        if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
-            if(command === "flushtarot") {
-                angryTarot = {};
-                msg.channel.send("All saved Tarots have been cleared!");
-            }
-
-            if(command === "updatereactions") {
-                updateCustomReactions();
-            }
-
-            if(command === "loadtarot") {
-                loadCachedTarots();
-                msg.channel.send("I have successfully loaded all saved tarots");
-            }
-        }
-
-        if(command === "count") {
+        }else if(command === "count") {
             getAngryCount()
                 .then((amount) => {
                     msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
@@ -197,9 +194,7 @@ client.on("message", (msg) => {
                     msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
                     console.error(err);
                 });
-        }
-
-        if(command === "tarotcount") {
+        }else if(command === "tarotcount") {
             getTarotCount()
                 .then((amount) => {
                     msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
@@ -207,9 +202,7 @@ client.on("message", (msg) => {
                     msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
                     console.error(err);
                 });
-        }
-
-        if(command === "emojilist") {
+        }else if(command === "emojilist") {
             if(allowLeaderboardCommand) {
                 allowLeaderboardCommand = false;
                 rankAngryEmojis(msg.channel);
@@ -217,9 +210,7 @@ client.on("message", (msg) => {
             } else {
                 msg.reply(`I am still working on the last one ${angrys[0]}`);
             }
-        }
-
-        if(command === "topspammer") {
+        }else if(command === "topspammer") {
             if(allowLeaderboardCommand) {
                 allowLeaderboardCommand = false;
                 rankAngrySpammers(msg.channel);
@@ -227,6 +218,8 @@ client.on("message", (msg) => {
             } else {
                 msg.reply(`I am still working on the last one ${angrys[0]}`);
             }
+        }else {
+            msg.reply(`That is not a command i know of 🥴`);
         }
     }
     //*/
@@ -293,6 +286,10 @@ function incrementTarotCounter(amount = 1) {
     }).catch((err) => console.error(err));
 }
 
+/**
+ * Sends the number of total angry emojis sent on the server to the server api
+ * @param {Number} amount The amount of total angry emojis sent
+ */
 async function updateTotalAngryEmoji(amount) {
     const body = `{"amount":${amount}}`;
     fetch(apiUrl + "angry-emoji-count", {

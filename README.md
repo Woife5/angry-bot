@@ -17,6 +17,17 @@ Command | Description
 `?angry emojilist`| Get a list of all angry emojis on the Discord Server and how often every single one has been used.
 `?angry topspammer`| Get a list of all Discord Server members and how many angry emojis they have sent on the Server.
 
+## Other functions of this bot
+
+### Reactions
+Every message sent will be reacted angry. The amount of angry reactions can be set from 0 to 20.
+
+### Custom Reactions and replys
+Every user can request a cutom angry reaction or reply. These custom reactions are stored in `custom-reactions.json`. This file can be reloaded dynamically while the bot is running without interruption. 
+
+### Roman
+Every time Roman Divotkey is mentioned the bot sends a reply to the message.
+
 ## Admin Commands
 Command | Description
 --- | ---

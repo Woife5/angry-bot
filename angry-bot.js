@@ -231,14 +231,15 @@ client.on("message", (msg) => {
     //*/
 
     // Check if a "normal" angry emoji has been used and cencor it
-    if(msg.cleanContent.includes("😠") ||
-        msg.cleanContent.includes("😡") ||
-        msg.cleanContent.includes("🤬")) {
+    if(msg.content.includes("😠") ||
+        msg.content.includes("😡") ||
+        msg.content.includes("🤬")) {
 
-        let cencoredContent = msg.cleanContent.replaceAll("\\", "\\ ");
+        let cencoredContent = msg.content.replaceAll("\\", "\\ ");
         cencoredContent = cencoredContent.replaceAll("😠", "`CENCORED` ");
         cencoredContent = cencoredContent.replaceAll("😡", "`CENCORED` ");
         cencoredContent = cencoredContent.replaceAll("🤬", "`CENCORED` ");
+
 
         msg.reply(cencoredContent + "\nThat is illegal!");
         msg.delete().catch(err => {

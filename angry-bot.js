@@ -230,6 +230,25 @@ client.on("message", (msg) => {
     }
     //*/
 
+    // Check if a "normal" angry emoji has been used and cencor it
+    if(msg.cleanContent.includes("😠") ||
+        msg.cleanContent.includes("😡") ||
+        msg.cleanContent.includes("🤬")) {
+
+        let cencoredContent = msg.cleanContent.replaceAll("\\", "\\ ");
+        cencoredContent = cencoredContent.replaceAll("😠", "`CENCORED` ");
+        cencoredContent = cencoredContent.replaceAll("😡", "`CENCORED` ");
+        cencoredContent = cencoredContent.replaceAll("🤬", "`CENCORED` ");
+
+        msg.reply(cencoredContent + "\nThat is illegal!");
+        msg.delete().catch(err => {
+            console.error(err);
+        });
+
+        // Return immediatly if message is deleted.
+        return;
+    }
+
     // Check if custom reactions need to be applied
     if(msg.author.id in customAngrys) {
         const custom  = customAngrys[msg.author.id];

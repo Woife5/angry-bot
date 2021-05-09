@@ -25,6 +25,9 @@ Every message sent will be reacted angry. The amount of angry reactions can be s
 ### Custom Reactions and replys
 Every user can request a cutom angry reaction or reply. These custom reactions are stored in `custom-reactions.json`. This file can be reloaded dynamically while the bot is running without interruption. 
 
+### Angry Emojis
+If any user send a normal angry emoji (😠😡🤬) in any channel, the bot will remove the message and state that these things are cencored.
+
 ### Roman
 Every time Roman Divotkey is mentioned the bot sends a reply to the message.
 

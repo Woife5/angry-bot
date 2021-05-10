@@ -1,9 +1,8 @@
 const Discord = require("discord.js");
 const fetch = require("node-fetch");
 const client = new Discord.Client();
-const Cache = require("./cache.js");
 const {promises: {readFile, writeFile}} = require("fs");
-const settings = require("./settings.json");
+const settings = require("./config/settings.json");
 
 /**
  * Prefix for all angry-commands
@@ -35,7 +34,14 @@ let allowLeaderboardCommand = true;
  */
 let angryTarot = {};
 let angryTarotTexts;
-const angryTarotCacheFile = "angry-tarot-cache.json";
+
+/**
+ * All relevant File locations
+ */
+const angryTarotCacheFile = "./stats-and-cache/angry-tarot-cache.json";
+const customReactionsFile = "./config/custom-reactions.json";
+const angryTarotFile = "./config/angry-tarot.json";
+const statFile = "./config/angry-stats.json";
 
 /**
  * An object containing all custom reactions that can be updated while the bot is running
@@ -45,7 +51,7 @@ let customAngrys;
 /**
  * A list of all angry emojis on the official angry discord: https://discord.gg/pZrBRA75wz
  */
-const angrys = [
+ const angrys = [
     "<:angry1:824231077588762634>",
     "<:angry2:824231091556188170>",
     "<:angry3:824231102725488640>",
@@ -94,6 +100,58 @@ const angrys = [
     "<:angry46:824231506780094464>",
     "<:angry47:824231519962398751>",
     "<:angry48:824231527382384671>",
+    "<:angry49:840157523319455746>",
+    "<:angry50:840157593791102996>",
+    "<:angry51:840157794426814464>",
+    "<:angry52:840157804961595392>",
+    "<:angry53:840157818825080832>",
+    "<:angry54:840157829448335370>",
+    "<:angry55:840157840677273611>",
+    "<:angry56:840157855780044800>",
+    "<:angry57:840157867730534421>",
+    "<:angry58:840157882741162035>",
+    "<:angry59:840157896184168458>",
+    "<:angry60:840157906074861589>",
+    "<:angry61:840157916719480872>",
+    "<:angry62:840157926761168937>",
+    "<:angry63:840157937192009779>",
+    "<:angry64:840157946632863756>",
+    "<:angry65:840157956493279303>",
+    "<:angry66:840157964748587048>",
+    "<:angry67:840157973404975104>",
+    "<:angry68:840157984436518942>",
+    "<:angry69:840157994389995541>",
+    "<:angry70:840158003671203840>",
+    "<:angry71:840158024504311869>",
+    "<:angry72:840158036991148032>",
+    "<:angry73:840158045090086933>",
+    "<:angry74:840158054518751253>",
+    "<:angry75:840158063885680640>",
+    "<:angry76:840158072621498398>",
+    "<:angry77:840158081786314792>",
+    "<:angry78:840158089760342016>",
+    "<:angry79:840158098996068352>",
+    "<:angry80:840158107321237514>",
+    "<:angry81:840158115391471635>",
+    "<:angry82:840158123524227092>",
+    "<:angry83:840158132605026334>",
+    "<:angry84:840158140615884800>",
+    "<:angry85:840158149989498901>",
+    "<:angry86:840158160487579689>",
+    "<:angry87:840158170751696936>",
+    "<:angry88:840158181502353439>",
+    "<:angry89:840158191316893716>",
+    "<:angry90:840158200401363005>",
+    "<:angry91:840158212245422090>",
+    "<:angry92:840158221594787894>",
+    "<:angry93:840158230717792257>",
+    "<:angry94:840158239857442817>",
+    "<:angry95:840158249079930891>",
+    "<:angry96:840158258337021952>",
+    "<:angry97:840158268629188610>",
+    "<:angry98:840158277324636161>",
+    "<:angry99:840158287331721255>",
+    "<:angry100:840158298429980683>",
 ];
 
 client.on("ready", () => {
@@ -105,7 +163,7 @@ client.on("ready", () => {
 client.login(settings["client-secret"]);
 
 // Read angry tarot texts into an array
-readFile("angry-tarot.json").then(fileBuffer => {
+readFile(angryTarotFile).then(fileBuffer => {
     angryTarotTexts = JSON.parse(fileBuffer.toString());
 }).catch(error => {
     console.error("Error reading File: " + error.message);
@@ -133,15 +191,18 @@ client.on("message", (msg) => {
             if(command === "flushtarot") {
                 angryTarot = {};
                 msg.channel.send("All saved Tarots have been cleared!");
+                return;
             }
 
             if(command === "updatereactions") {
                 updateCustomReactions();
+                return;
             }
 
             if(command === "loadtarot") {
                 loadCachedTarots();
                 msg.channel.send("I have successfully loaded all saved tarots");
+                return;
             }
         }
 
@@ -162,19 +223,38 @@ client.on("message", (msg) => {
 
             msg.channel.send(commands);
         }else if(command === "tarot") {
-            // Get random angry emoji and store it for this user
-            if(angryTarot[msg.author.id] && angryTarot[msg.author.id].isValid()) {
-                msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].getData()]}.\n${angryTarotTexts[angryTarot[msg.author.id].getData()]}\n\nYou can get a new one tomorrow (in ${angryTarot[msg.author.id].getTimeLeftMin()} Minutes).`);
+
+            // If the user has already a tarot cached that was read today, be angry with him
+            if(angryTarot[msg.author.id] && 
+                angryTarot[msg.author.id].timestamp > new Date().setHours(0,0,0,0) && 
+                angryTarot[msg.author.id].timestamp < new Date().setHours(24,0,0,0)) {
+
+                    let text = angryTarotTexts[angryTarot[msg.author.id].tarot].text;
+                    text = text.replaceAll(":angry:", angrys[angryTarot[msg.author.id].tarot]);
+                    
+                    let options = {};
+                    if(angryTarotTexts[angryTarot[msg.author.id].tarot].files) {
+                        options = {"files": angryTarotTexts[angryTarot[msg.author.id].tarot].files};
+                    }
+                    msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].tarot]}.\n${text}\n\nYou can get a new one tomorrow (in ${(new Date().setHours(24, 0, 0, 0) - Date.now())/60000} Minutes).`, options);
             } else {
+                msg.reply(`Let me sense your angry...`);
                 // Assign a new random daily angry emoji
-                let dailyAngry = Math.floor(Math.random() * angrys.length);
-                angryTarot[msg.author.id] = new Cache(dailyAngry, (new Date().setHours(24,0,0,0) - Date.now()));
+                const dailyAngry = Math.floor(Math.random() * angrys.length);
+                angryTarot[msg.author.id] = {"tarot": dailyAngry, "timestamp": Date.now()};
                 incrementTarotCounter();
 
-                msg.reply(`Let me sense your angry...`);
                 setTimeout(() => {
-                    msg.reply(`Your angry today is angry${dailyAngry+1} ${angrys[dailyAngry]}\n\n${angryTarotTexts[dailyAngry]}`);
+                    let text = angryTarotTexts[dailyAngry].text;
+                    text = text.replaceAll(":angry:", angrys[dailyAngry]);
+
+                    let options = {};
+                    if(angryTarotTexts[dailyAngry].files) {
+                        options = {"files": angryTarotTexts[angryTarot[msg.author.id].tarot].files};
+                    }
+                    msg.reply(`Your angry today is angry${dailyAngry+1} ${angrys[dailyAngry]}\n\n${text}`, options);
                 }, 2000);
+
                 writeFile(angryTarotCacheFile, JSON.stringify(angryTarot))
                     .catch((err) => {
                         console.error("Writing cache failed: " + JSON.stringify(err));
@@ -355,6 +435,51 @@ function getTarotCount() {
 }
 
 /**
+ * Adds a given array of reactions to a message on discord
+ * @param {Message} msg Message to react to
+ * @param {Array} reactions Array of reactions to add
+ */
+async function addReactions(msg, reactions) {
+    for(let i = 0; i < reactions.length; i++) {
+        await msg.react(reactions[i]);
+    }
+}
+
+/**
+ * Updates the internal cache of custom reactions
+ */
+function updateCustomReactions() {
+    readFile(customReactionsFile).then(fileBuffer => {
+        customAngrys = JSON.parse(fileBuffer.toString());
+    }).catch(error => {
+        console.error("Error reading custom emojis: " + error.message);
+    });
+}
+
+/**
+ * Loads all saved tarots from cache file
+ */
+function loadCachedTarots() {
+    readFile(angryTarotCacheFile)
+    .then(fileBuffer => {
+        const data = JSON.parse(fileBuffer.toString());
+        angryTarot = {};
+
+        Object.entries(data).forEach(entry => {
+            const [key, value] = entry;
+
+            if(value.timestamp > new Date().setHours(0, 0, 0, 0)) {
+                angryTarot[key] = value;
+            }
+        });
+        
+        console.log("All tarots have been loaded again.");
+    }).catch(err => {
+        console.error("Error reading tarot cache: " + JSON.stringify(err));
+    });
+}
+
+/**
  * This function takes a dicord channel as argument and sreturns all found messages as an array
  * @param {Channel} channel The channel that should be scraped
  * @returns An array containing all messages in the given Channel
@@ -380,50 +505,6 @@ async function all_messages_getter(channel) {
     }
 
     return sum_messages;
-}
-
-/**
- * Adds a given array of reactions to a message on discord
- * @param {Message} msg Message to react to
- * @param {Array} reactions Array of reactions to add
- */
-async function addReactions(msg, reactions) {
-    for(let i = 0; i < reactions.length; i++) {
-        await msg.react(reactions[i]);
-    }
-}
-
-/**
- * Updates the internal cache of custom reactions
- */
-function updateCustomReactions() {
-    readFile("custom-reactions.json").then(fileBuffer => {
-        customAngrys = JSON.parse(fileBuffer.toString());
-    }).catch(error => {
-        console.error("Error reading custom emojis: " + error.message);
-    });
-}
-
-/**
- * Loads all saved tarots from cache file
- */
-function loadCachedTarots() {
-    readFile(angryTarotCacheFile)
-        .then(fileBuffer => {
-            const data = JSON.parse(fileBuffer.toString());
-            const keys = Object.keys(data);
-            angryTarot = {};
-
-            for(let i = 0; i < keys.length; i++) {
-                const obj = data[keys[i]];
-                if(obj.lastUpdate < new Date().setHours(24,0,0,0) && obj.lastUpdate > new Date().setHours(0, 0, 0, 0))
-                    angryTarot[keys[i]] = new Cache(obj.data, (new Date().setHours(24,0,0,0) - Date.now()));
-            }
-
-            console.log("All tarots have been loaded again.");
-        }).catch(err => {
-            console.error("Error reading tarot cache: " + JSON.stringify(err));
-        });
 }
 
 async function rankAngryEmojis(sendChannel) {
@@ -457,7 +538,13 @@ async function rankAngryEmojis(sendChannel) {
                 if(channelCounter >= channelAmount) {
                     let result = "";
                     for (let i = 0; i < angrys.length; i++) {
-                        result += ":angry" + (i+1) + ": sent " + emojiCounter[angrys[i]] + " times\n";
+                        if(emojiCounter[angrys[i]]) {
+                            result += angrys[i] + " sent " + emojiCounter[angrys[i]] + " times.\n";
+                        }
+                        if(result.length >= 1700) {
+                            sendChannel.send(result);
+                            result = "";
+                        }
                     }
                     result += `A total of ${totalAngryEmoji} angry Emojis have been sent here.\n`;
                     sendChannel.send(result);
@@ -482,17 +569,15 @@ async function rankAngrySpammers(sendChannel) {
                 allMessages.forEach((message) => {
                     // Only check message if it was not sent by the bot
                     if(message.author.id !== botID) {
-                        if(message.content.includes("angry")) {
-                            const regex = new RegExp("<:angry[0-9]{1,2}:[0-9]+>", "g");
-                            let count = (message.content.match(regex) || []).length;
-                            totalAngryEmoji += count;
-                            let sender = message.author.username;
-                            // Angry found
-                            if(spammerCounter[sender]) {
-                                spammerCounter[sender] += count;
-                            } else {
-                                spammerCounter[sender] = count;
-                            }
+                        const regex = new RegExp("<:angry[0-9]{1,3}:[0-9]+>", "g");
+                        const count = (message.content.match(regex) || []).length;
+                        totalAngryEmoji += count;
+                        const sender = message.author.username;
+                        // Angry found
+                        if(spammerCounter[sender]) {
+                            spammerCounter[sender] += count;
+                        } else if(count > 0) {
+                            spammerCounter[sender] = count;
                         }
                     }
                 });
@@ -500,7 +585,7 @@ async function rankAngrySpammers(sendChannel) {
             }).finally(() => {
                 if(channelCounter >= channelAmount) {
                     let spammerRanking = [];
-                    let spammerNames = Object.keys(spammerCounter);
+                    const spammerNames = Object.keys(spammerCounter);
                     for (let i = 0; i < spammerNames.length; i++) {
                         const spammerObj = {
                             "name": spammerNames[i],
@@ -515,6 +600,10 @@ async function rankAngrySpammers(sendChannel) {
                     let result = "";
                     spammerRanking.forEach((spammer) => {
                         result += `${spammer.name} sent ${spammer.angrys} angrys.\n`;
+                        if(result.length >= 1900) {
+                            sendChannel.send(result);
+                            result = "";
+                        }
                     });
                     result += `A total of ${totalAngryEmoji} angry Emojis have been sent here.\n`;
                     sendChannel.send(result);

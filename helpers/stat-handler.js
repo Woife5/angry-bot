@@ -95,6 +95,13 @@ class AngryStatHandler {
         }
     }
 
+    /**
+     * Sets a stat for a given user.
+     * @param {Number} userId Discord user ID
+     * @param {String} userName Discord username
+     * @param {String} key Stat key (see class constants)
+     * @param {*} value Value of the stat
+     */
     setUserStat(userId, userName, key, value) {
         if(!this.stats.users[userId]) {
             this.stats.users[userId] = {
@@ -105,6 +112,12 @@ class AngryStatHandler {
         this.stats.users[userId][key] = value;
     }
     
+    /**
+     * Increments one stat entry for one user
+     * @param {Number} userId Discord user ID
+     * @param {String} key Stat key (see class constants)
+     * @param {Number} value Amount that the stat should be incremented
+     */
     incrementUserStat(userId, key, value = 1) {
         if(this.stats.users[userId][key]) {
             this.stats.users[userId][key] += value;
@@ -113,6 +126,12 @@ class AngryStatHandler {
         }
     }
 
+    /**
+     * Increments the emoji usage stat for a given user
+     * @param {Number} userId Discord user Id
+     * @param {Number} emoji ID of the angry-emoji
+     * @param {Number} amount Amount by which the stat is increased
+     */
     incrementUserEmoji(userId, emoji, amount = 1) {
         if(!this.stats.users[userId].emojis) 
             this.stats.users[userId].emojis = {};
@@ -124,16 +143,31 @@ class AngryStatHandler {
         this.incrementUserStat(userId, this.USER_ANGRY_EMOJIS_SENT, amount);
     }
 
+    /**
+     * Returns all stats saved for a given user
+     * @param {Number} userId Discord user ID
+     * @returns All stats for the given user
+     */
     getUserStats(userId) {
         if(this.stats.users[userId]) {
             return this.stats.users[userId];
         }
     }
 
+    /**
+     * Get all saved stats for all users
+     * @returns All stats for all users
+     */
     getAllUserStats() {
         return this.stats.users;
     }
 
+    /**
+     * Returns how often every emoji has been used, if a user ID is provided then
+     * only the emoji usage for this one user is returned.
+     * @param {Number} userId Discord user ID (optional)
+     * @returns How often all emojis have been used
+     */
     getEmojiStats(userId = null) {
         if(userId && this.stats.users[userId]) {
             return this.stats.users[userId].emojis;
@@ -142,6 +176,11 @@ class AngryStatHandler {
         }
     }
 
+    /**
+     * Increments the total number a given angry-emoji has been used
+     * @param {Number} emoji Angry-Emoji ID
+     * @param {Number} amount Amount by which the stat should be incremented (default 1)
+     */
     incrementEmojiStat(emoji, amount = 1) {
         if(this.stats.emojis[emoji]) {
             this.stats.emojis[emoji] += amount;
@@ -150,6 +189,11 @@ class AngryStatHandler {
         }
     }
 
+    /**
+     * Takes in an Array of Discord messages and searches through all of them for angry-emojis.
+     * Updates the emoji-usage stats accordingly
+     * @param {Array<Meaasge>} newMessages An array of Discord messages
+     */
     updateTotals(newMessages) {     
         newMessages.forEach(message => {
             if(!this.stats.users[message.author.id])
@@ -166,6 +210,11 @@ class AngryStatHandler {
         });
     }
 
+    /**
+     * Remembers the last message that has already been included in the stats
+     * @param {Number} channelId Discord channel ID
+     * @param {Number} messageId Discord message ID
+     */
     setLastMessageId(channelId, messageId) {
         this.lastCachedMessages[channelId] = messageId;
         writeFile(channelCacheFile, JSON.stringify(this.lastCachedMessages)).catch(err => {
@@ -173,6 +222,11 @@ class AngryStatHandler {
         });
     }
 
+    /**
+     * Returns the ID of the last message already included in the stats for a given channel
+     * @param {Number} channelId Discord channel ID
+     * @returns The ID of the last message already included in the stats
+     */
     getLastMessageId(channelId) {
         if(!this.lastCachedMessages[channelId]) {
             return null;

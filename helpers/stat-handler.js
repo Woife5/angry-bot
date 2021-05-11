@@ -84,11 +84,17 @@ class AngryStatHandler {
      * Increments the counter for one individual tarot and sum of all tarots
      * @param {Number} tarot The tarot that was read and needs to be incremented
      */
-    incrementTarotStat(userId, tarot) {
+    incrementTarotStat(userId, userName, tarot) {
         if(this.stats.tarots[tarot]) {
             this.stats.tarots[tarot] += 1;
         } else {
             this.stats.tarots[tarot] = 1;
+        }
+
+        if(!this.stats.users[userId]){
+            this.stats.users[userId] = {
+                "name": userName
+            };
         }
 
         this.incrementStat(this.TAROTS_READ);

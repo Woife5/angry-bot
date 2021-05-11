@@ -245,7 +245,7 @@ client.on("message", (msg) => {
                 const dailyAngry = Math.floor(Math.random() * angrys.length);
                 angryTarot[msg.author.id] = {"tarot": dailyAngry, "timestamp": Date.now()};
 
-                StatHandler.incrementTarotStat(dailyAngry);
+                StatHandler.incrementTarotStat(msg.author.id, msg.author.username, dailyAngry);
 
                 setTimeout(() => {
                     let text = angryTarotTexts[dailyAngry].text;

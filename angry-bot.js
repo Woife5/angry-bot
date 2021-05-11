@@ -289,8 +289,7 @@ client.on("message", (msg) => {
     //* Be extra angry if divotkey is mentioned
     if(msg.cleanContent.toLocaleLowerCase().includes("roman") || msg.cleanContent.toLocaleLowerCase().includes("divotkey"))
     {
-        msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}`);
-        msg.channel.send(":clock10: :rolling_eyes:");
+        msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}\n:clock10: :rolling_eyes:`);
         StatHandler.incrementStat(StatHandler.DIVOTKEY_REACTIONS);
     }
     //*/

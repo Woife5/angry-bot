@@ -483,6 +483,11 @@ async function updateTotalsForAllChannels(sendChannel) {
 async function rankAngryEmojis(sendChannel, userId = null) {
     await updateTotalsForAllChannels(sendChannel);
     const emojiStats = StatHandler.getEmojiStats(userId);
+    if(!emojiStats) {
+        sendChannel.send("You have not sent any angry emojis.");
+        return;
+    }
+
     let result = "";
     for (let i = 0; i < angrys.length; i++) {
         if(emojiStats[i+1]) {
@@ -504,6 +509,10 @@ async function rankAngrySpammers(sendChannel) {
 
     const userStatEntries = Object.entries(userStats);
     for ([key, value] of userStatEntries) {
+        if(!value[StatHandler.USER_ANGRY_EMOJIS_SENT]) {
+            continue;
+        }
+
         const spammerObj = {
             "name": value.name,
             "angrys": value[StatHandler.USER_ANGRY_EMOJIS_SENT]

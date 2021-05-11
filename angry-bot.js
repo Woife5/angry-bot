@@ -202,12 +202,7 @@ client.on("message", (msg) => {
             }
 
             if(command === "debug") {
-                new_messages_getter(msg.channel, "840157235748667392").then(array => {
-                    console.log("NewMSG: Length: " + array.length);
-                })
-                all_messages_getter(msg.channel).then(array => {
-                    console.log("AllMSG: Length: " + array.length);
-                })
+                updateTotalsForAllChannels(msg.channel);
                 return;
             }
         }
@@ -278,7 +273,7 @@ client.on("message", (msg) => {
         }else if(command === "emojilist") {
             // Get list of all emojis
             if(allowLeaderboardCommand) {
-                allowLeaderboardCommand = false;
+                //allowLeaderboardCommand = false;
                 rankAngryEmojis(msg.channel);
                 msg.channel.send("Let me search through all messages real quick...");
             } else {
@@ -287,7 +282,7 @@ client.on("message", (msg) => {
         }else if(command === "topspammer") {
             // Get top spammer
             if(allowLeaderboardCommand) {
-                allowLeaderboardCommand = false;
+                //allowLeaderboardCommand = false;
                 rankAngrySpammers(msg.channel);
                 msg.channel.send("Let me search through all messages real quick...");
             } else {
@@ -387,8 +382,6 @@ function loadCachedTarots() {
                 angryTarot[key] = value;
             }
         });
-        
-        console.log("All tarots have been loaded again.");
     }).catch(err => {
         console.error("Error reading tarot cache: " + JSON.stringify(err));
     });
@@ -437,6 +430,10 @@ async function new_messages_getter(channel, after) {
         
         const messages = await channel.messages.fetch(options);
 
+        if(messages.size == 0) {
+            break;
+        }
+
         let messagesArray = messages.array();
         messagesArray = messagesArray.filter(message => message.author.id != botID );
 
@@ -451,112 +448,78 @@ async function new_messages_getter(channel, after) {
     return sum_messages;
 }
 
-async function rankAngryEmojis(sendChannel) {
-    let totalAngryEmoji = 0;
-    let emojiCounter = {};
-    let channelAmount = sendChannel.guild.channels.cache.array().length;
-    let channelCounter = 0;
-    sendChannel.guild.channels.cache.forEach((channel) => {
-        if(channel.type === "text"){
-            all_messages_getter(channel).then(allMessages => {
-                allMessages.forEach((message) => {
-                    // Only check message if it was not sent by the bot
-                    if(message.content && message.author.id !== botID) {
-                        angrys.forEach(angry => {
-                            if(message.content.includes(angry)) {
-                                const regex = new RegExp(angry, "g");
-                                let count = (message.content.match(regex) || []).length;
-                                totalAngryEmoji += count;
-                                // Angry found
-                                if(emojiCounter[angry]) {
-                                    emojiCounter[angry] += count;
-                                } else {
-                                    emojiCounter[angry] = count;
-                                }
-                            }
-                        });
-                    }
-                });
-                channelCounter++;
-            }).finally(() => {
-                if(channelCounter >= channelAmount) {
-                    let result = "";
-                    for (let i = 0; i < angrys.length; i++) {
-                        if(emojiCounter[angrys[i]]) {
-                            result += angrys[i] + " sent " + emojiCounter[angrys[i]] + " times.\n";
-                        }
-                        if(result.length >= 1700) {
-                            sendChannel.send(result);
-                            result = "";
-                        }
-                    }
-                    result += `A total of ${totalAngryEmoji} angry Emojis have been sent here.\n`;
-                    sendChannel.send(result);
-                    StatHandler.incrementStat(StatHandler.TOTAL_ANGRY_EMOJIS_SENT, totalAngryEmoji);
-                    allowLeaderboardCommand = true;
-                }
-            });
-        } else {
-            channelCounter++;
+async function updateTotalsForAllChannels(sendChannel) {
+    sendChannel.send("Let me go through all new messages real quick...");
+
+    const channelAmount = sendChannel.guild.channels.cache.array().length;
+    const allMessagesFromAllChannels = [];
+
+    let channels = sendChannel.guild.channels.cache.map(m => m.id);
+
+    for(let i = 0; i < channelAmount; i++) {
+        let channel = sendChannel.guild.channels.cache.get(channels[i]);
+        if(channel.type !== "text") {
+            continue;
         }
-    });
+        // Check weather there is a cached version of this channel
+        let allMessages;
+        const lastMessageId = StatHandler.getLastMessageId(channel.id);
+        if(lastMessageId) {
+            allMessages = await new_messages_getter(channel, lastMessageId);
+        } else {
+            allMessages = await all_messages_getter(channel);
+        }
+
+        if(allMessages.length > 0) {
+            StatHandler.setLastMessageId(channel.id, allMessages[0].id);
+            allMessagesFromAllChannels.push(...allMessages);
+        }
+    }
+    StatHandler.updateTotals(allMessagesFromAllChannels);
+    sendChannel.send("Ok i am done, I have gone through "+allMessagesFromAllChannels.length+" messages.");
+}
+
+async function rankAngryEmojis(sendChannel) {
+    await updateTotalsForAllChannels(sendChannel);
+    const emojiStats = StatHandler.getEmojiStats();
+    let result = "";
+    for (let i = 0; i < angrys.length; i++) {
+        if(emojiStats[i]) {
+            result += angrys[i] + " sent " + emojiStats[i] + " times.\n";
+        }
+        if(result.length >= 1700) {
+            sendChannel.send(result);
+            result = "";
+        }
+    }
+    sendChannel.send(result);
 }
 
 async function rankAngrySpammers(sendChannel) {
-    let totalAngryEmoji = 0;
-    let spammerCounter = {};
-    let channelAmount = sendChannel.guild.channels.cache.array().length;
-    let channelCounter = 0;
-    sendChannel.guild.channels.cache.forEach((channel) => {
-        if(channel.type === "text"){
-            all_messages_getter(channel).then(allMessages => {
-                allMessages.forEach((message) => {
-                    // Only check message if it was not sent by the bot
-                    if(message.author.id !== botID) {
-                        const regex = new RegExp("<:angry[0-9]{1,3}:[0-9]+>", "g");
-                        const count = (message.content.match(regex) || []).length;
-                        totalAngryEmoji += count;
-                        const sender = message.author.username;
-                        // Angry found
-                        if(spammerCounter[sender]) {
-                            spammerCounter[sender] += count;
-                        } else if(count > 0) {
-                            spammerCounter[sender] = count;
-                        }
-                    }
-                });
-                channelCounter++;
-            }).finally(() => {
-                if(channelCounter >= channelAmount) {
-                    let spammerRanking = [];
-                    const spammerNames = Object.keys(spammerCounter);
-                    for (let i = 0; i < spammerNames.length; i++) {
-                        const spammerObj = {
-                            "name": spammerNames[i],
-                            "angrys": spammerCounter[spammerNames[i]],
-                        };
-                        spammerRanking.push(spammerObj);
-                    }
-                    spammerRanking.sort((a, b) => {
-                        return b.angrys - a.angrys;
-                    });
+    await updateTotalsForAllChannels(sendChannel);
+    const userStats = StatHandler.getAllUserStats();
+    let result = "";
+    const spammerArray = [];
 
-                    let result = "";
-                    spammerRanking.forEach((spammer) => {
-                        result += `${spammer.name} sent ${spammer.angrys} angrys.\n`;
-                        if(result.length >= 1900) {
-                            sendChannel.send(result);
-                            result = "";
-                        }
-                    });
-                    result += `A total of ${totalAngryEmoji} angry Emojis have been sent here.\n`;
-                    sendChannel.send(result);
-                    StatHandler.incrementStat(StatHandler.TOTAL_ANGRY_EMOJIS_SENT, totalAngryEmoji);
-                    allowLeaderboardCommand = true;
-                }
-            });
-        } else {
-            channelCounter++;
+    const userStatEntries = Object.entries(userStats);
+    for ([key, value] of userStatEntries) {
+        const spammerObj = {
+            "name": value.name,
+            "angrys": value[StatHandler.USER_ANGRY_EMOJIS_SENT]
+        };
+        spammerArray.push(spammerObj);
+    }
+
+    spammerArray.sort((a, b) => {
+        return b.angrys - a.angrys;
+    });
+
+    spammerArray.forEach((spammer) => {
+        result += `${spammer.name} sent ${spammer.angrys} angrys.\n`;
+        if(result.length >= 1900) {
+            sendChannel.send(result);
+            result = "";
         }
     });
+    sendChannel.send(result);
 }

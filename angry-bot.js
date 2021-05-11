@@ -213,6 +213,7 @@ client.on("message", (msg) => {
             commands += "`" + prefix + " tarotcount` - See the number tarots I have read\n";
             commands += "`" + prefix + " count` - Get total amount of angry reactions\n";
             commands += "`" + prefix + " emojilist` - Get top angry emojis\n";
+            commands += "`" + prefix + " myemojilist` - Get top angry emojis sent only by you\n";
             commands += "`" + prefix + " topspammer` - Get top angry spammers\n";
 
             if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {

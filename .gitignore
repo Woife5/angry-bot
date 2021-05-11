@@ -105,4 +105,5 @@ dist
 
 # Custom and secret files
 settings.json
-angry-tarot-cache.json
+angry-stats.json
+stats-and-cache

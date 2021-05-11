@@ -15,6 +15,7 @@ Command | Description
 `?angry tarotcount`| Get the number of angry tarots the bot has read so far.
 `?angry count `| Get the number of angry reactions the bot has added to messages so far. Only angry reactions are counted.
 `?angry emojilist`| Get a list of all angry emojis on the Discord Server and how often every single one has been used.
+`?angry myemojilist`| Get a list of your top used angry emojis on the Discord Server.
 `?angry topspammer`| Get a list of all Discord Server members and how many angry emojis they have sent on the Server.
 
 ## Other functions of this bot

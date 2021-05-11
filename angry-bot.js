@@ -291,6 +291,7 @@ client.on("message", (msg) => {
     {
         msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}`);
         msg.channel.send(":clock10: :rolling_eyes:");
+        StatHandler.incrementStat(StatHandler.DIVOTKEY_REACTIONS);
     }
     //*/
 
@@ -309,6 +310,8 @@ client.on("message", (msg) => {
         msg.delete().catch(err => {
             console.error(err);
         });
+
+        StatHandler.incrementCencoredStat(msg.author.id, msg.author.username);
 
         // Return immediatly if message is deleted.
         return;

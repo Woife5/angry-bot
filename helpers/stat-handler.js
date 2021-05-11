@@ -9,6 +9,8 @@ class AngryStatHandler {
     TOTAL_ANGRY_EMOJIS_SENT = "angry-emois-sent-total";
     USER_ANGRY_EMOJIS_SENT = "emojis-sent";
     USER_TAROTS_READ = "tarots-requested";
+    DIVOTKEY_REACTIONS = "angry-divotkey";
+    TIMES_CENCORED = "messages-cencored";
 
     stats = {}
     lastDBUpdate = 0;
@@ -39,6 +41,17 @@ class AngryStatHandler {
         }).catch(error => {
             console.error("Error reading cache File: " + error.message);
         });
+    }
+
+    incrementCencoredStat(userId, userName, amount = 1) {
+        if(!this.stats.users[userId]) {
+            this.stats.users[userId] = {
+                "name": userName
+            };
+        }
+        
+        this.incrementStat(this.TIMES_CENCORED, amount);
+        this.incrementUserStat(userId, this.TIMES_CENCORED, amount);
     }
 
     /**

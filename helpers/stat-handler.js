@@ -6,6 +6,8 @@ class AngryStatHandler {
     BOT_ANGRY_REACTIONS = "angry-reactions-by-bot";
     TAROTS_READ = "angry-tarots-read";
     TOTAL_ANGRY_EMOJIS_SENT = "angry-emois-sent";
+    USER_ANGRY_EMOJIS_SENT = "angry-emojis-sent";
+    USER_TAROTS_READ = "angry-tarots-requested";
 
     stats = {}
 
@@ -20,6 +22,9 @@ class AngryStatHandler {
         }).finally(() => {
             if(!this.stats.tarots) {
                 this.stats.tarots = {};
+            }
+            if(!this.stats.users){
+                this.stats.users = {};
             }
         });
     }
@@ -77,6 +82,22 @@ class AngryStatHandler {
         }
     }
 
+    setIndividualStat(userId, userName, key, value) {
+        if(!this.stats.users[userId]) {
+            this.stats.users[userId] = {
+                "name": userName,
+            };
+        }
+        
+        this.stats.users[userId][key] = value;
+    }
+    
+    setIndividualStat(userId, key, value) {
+        if(this.stats.users[userId]) {
+            this.stats.users[userId][key] = value;
+        }
+    }
+
     /**
      * Writes all currently saved stats to a file
      */
@@ -94,10 +115,5 @@ class AngryStatHandler {
         // TODO write all current stats to the mongodb database? maybe sometime
     }
 }
-
-// Stat constants
-
-
-
 
 module.exports = AngryStatHandler;

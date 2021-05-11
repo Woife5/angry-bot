@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const {promises: {readFile, writeFile}} = require("fs");
 const settings = require("./config/settings.json");
 
-const Stats = require("./stat-handler.js");
+const Stats = require("./helpers/stat-handler.js");
 const StatHandler = new Stats();
 
 /**
@@ -20,11 +20,6 @@ const botID = "824235133284253736";
  * Amount of angry reactions per message
  */
 const angryAmount = 5;
-
-/**
- * Api location of the database handler
- */
-const apiUrl = "http://wolfberry:88/api/";
 
 /**
  * Allow any user to issue a command that searches through every message on the server
@@ -203,6 +198,16 @@ client.on("message", (msg) => {
             if(command === "loadtarot") {
                 loadCachedTarots();
                 msg.channel.send("I have successfully loaded all saved tarots");
+                return;
+            }
+
+            if(command === "debug") {
+                new_messages_getter(msg.channel, "840157235748667392").then(array => {
+                    console.log("NewMSG: Length: " + array.length);
+                })
+                all_messages_getter(msg.channel).then(array => {
+                    console.log("AllMSG: Length: " + array.length);
+                })
                 return;
             }
         }
@@ -406,8 +411,37 @@ async function all_messages_getter(channel) {
         
         const messages = await channel.messages.fetch(options);
 
-        sum_messages.push(...messages.array());
+        let messagesArray = messages.array();
+        messagesArray = messagesArray.filter(message => message.author.id != botID );
+
+        sum_messages.push(...messagesArray);
         last_id = messages.last().id;
+
+        if (messages.size != 100) {
+            break;
+        }
+    }
+
+    return sum_messages;
+}
+
+async function new_messages_getter(channel, after) {
+    const sum_messages = [];
+    let last_id = after;
+    
+    while (true) {
+        let options = { 
+            limit: 100,
+            after: last_id,
+         };
+        
+        const messages = await channel.messages.fetch(options);
+
+        let messagesArray = messages.array();
+        messagesArray = messagesArray.filter(message => message.author.id != botID );
+
+        sum_messages.push(...messagesArray);
+        last_id = messages.first().id;
 
         if (messages.size != 100) {
             break;

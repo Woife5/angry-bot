@@ -272,22 +272,13 @@ client.on("message", (msg) => {
             msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
         }else if(command === "emojilist") {
             // Get list of all emojis
-            if(allowLeaderboardCommand) {
-                //allowLeaderboardCommand = false;
-                rankAngryEmojis(msg.channel);
-                msg.channel.send("Let me search through all messages real quick...");
-            } else {
-                msg.reply(`I am still working on the last one ${angrys[0]}`);
-            }
+            rankAngryEmojis(msg.channel);
         }else if(command === "topspammer") {
             // Get top spammer
-            if(allowLeaderboardCommand) {
-                //allowLeaderboardCommand = false;
-                rankAngrySpammers(msg.channel);
-                msg.channel.send("Let me search through all messages real quick...");
-            } else {
-                msg.reply(`I am still working on the last one ${angrys[0]}`);
-            }
+            rankAngrySpammers(msg.channel);
+        }else if(command === "myemojilist") {
+            // Get list of all emojis by this user
+            rankAngryEmojis(msg.channel, msg.author.id);
         }else {
             msg.reply(`That is not a command i know of 🥴`);
         }
@@ -449,6 +440,11 @@ async function new_messages_getter(channel, after) {
 }
 
 async function updateTotalsForAllChannels(sendChannel) {
+    if(!allowLeaderboardCommand){
+        sendChannel.send("I am still working...");
+        return;
+    }
+    allowLeaderboardCommand = false;
     sendChannel.send("Let me go through all new messages real quick...");
 
     const channelAmount = sendChannel.guild.channels.cache.array().length;
@@ -477,15 +473,16 @@ async function updateTotalsForAllChannels(sendChannel) {
     }
     StatHandler.updateTotals(allMessagesFromAllChannels);
     sendChannel.send("Ok i am done, I have gone through "+allMessagesFromAllChannels.length+" messages.");
+    allowLeaderboardCommand = true;
 }
 
-async function rankAngryEmojis(sendChannel) {
+async function rankAngryEmojis(sendChannel, userId = null) {
     await updateTotalsForAllChannels(sendChannel);
-    const emojiStats = StatHandler.getEmojiStats();
+    const emojiStats = StatHandler.getEmojiStats(userId);
     let result = "";
     for (let i = 0; i < angrys.length; i++) {
-        if(emojiStats[i]) {
-            result += angrys[i] + " sent " + emojiStats[i] + " times.\n";
+        if(emojiStats[i+1]) {
+            result += angrys[i] + " sent " + emojiStats[i+1] + " times"+ (userId != null ? " by you" : "") +".\n";
         }
         if(result.length >= 1700) {
             sendChannel.send(result);

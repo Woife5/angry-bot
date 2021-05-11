@@ -134,8 +134,12 @@ class AngryStatHandler {
         return this.stats.users;
     }
 
-    getEmojiStats() {
-        return this.stats.emojis;
+    getEmojiStats(userId = null) {
+        if(userId && this.stats.users[userId]) {
+            return this.stats.users[userId].emojis;
+        } else {
+            return this.stats.emojis;
+        }
     }
 
     incrementEmojiStat(emoji, amount = 1) {

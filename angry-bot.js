@@ -1,8 +1,10 @@
 const Discord = require("discord.js");
-const fetch = require("node-fetch");
 const client = new Discord.Client();
 const {promises: {readFile, writeFile}} = require("fs");
 const settings = require("./config/settings.json");
+
+const Stats = require("./stat-handler.js");
+const StatHandler = new Stats();
 
 /**
  * Prefix for all angry-commands
@@ -41,7 +43,6 @@ let angryTarotTexts;
 const angryTarotCacheFile = "./stats-and-cache/angry-tarot-cache.json";
 const customReactionsFile = "./config/custom-reactions.json";
 const angryTarotFile = "./config/angry-tarot.json";
-const statFile = "./config/angry-stats.json";
 
 /**
  * An object containing all custom reactions that can be updated while the bot is running
@@ -242,7 +243,8 @@ client.on("message", (msg) => {
                 // Assign a new random daily angry emoji
                 const dailyAngry = Math.floor(Math.random() * angrys.length);
                 angryTarot[msg.author.id] = {"tarot": dailyAngry, "timestamp": Date.now()};
-                incrementTarotCounter();
+
+                StatHandler.incrementTarotStat(dailyAngry);
 
                 setTimeout(() => {
                     let text = angryTarotTexts[dailyAngry].text;
@@ -252,7 +254,7 @@ client.on("message", (msg) => {
                     if(angryTarotTexts[dailyAngry].files) {
                         options = {"files": angryTarotTexts[angryTarot[msg.author.id].tarot].files};
                     }
-                    msg.reply(`Your angry today is angry${dailyAngry+1} ${angrys[dailyAngry]}\n\n${text}`, options);
+                    msg.reply(`Your angry today is :angry${dailyAngry+1}: ${angrys[dailyAngry]}\n\n${text}`, options);
                 }, 2000);
 
                 writeFile(angryTarotCacheFile, JSON.stringify(angryTarot))
@@ -262,22 +264,12 @@ client.on("message", (msg) => {
             }
         }else if(command === "count") {
             // Get amount of angry reactions
-            getAngryCount()
-                .then((amount) => {
-                    msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
-                }).catch((err) => {
-                    msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
-                    console.error(err);
-                });
+            const amount = StatHandler.getStat(StatHandler.BOT_ANGRY_REACTIONS);
+            msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
         }else if(command === "tarotcount") {
             // Get amount of tartots read
-            getTarotCount()
-                .then((amount) => {
-                    msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
-                }).catch((err) => {
-                    msg.channel.send(`Oups, something went wrong x.x ${angrys[0]}`);
-                    console.error(err);
-                });
+            const amount = StatHandler.getStat(StatHandler.TAROTS_READ);
+            msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
         }else if(command === "emojilist") {
             // Get list of all emojis
             if(allowLeaderboardCommand) {
@@ -337,7 +329,7 @@ client.on("message", (msg) => {
         if(custom.reply) {
             msg.reply(custom.reply);
         }
-        incrementAngryCounter(custom.angrys);
+        StatHandler.incrementStat(StatHandler.BOT_ANGRY_REACTIONS, custom.angrys);
         return;
     }
 
@@ -345,94 +337,12 @@ client.on("message", (msg) => {
     for (let i = 0; i < angryAmount; i++) {
         msg.react(angrys[i]);
     }
-    incrementAngryCounter(angryAmount);
+    StatHandler.incrementStat(StatHandler.BOT_ANGRY_REACTIONS, angryAmount);
 });
 
 //******************************************************
 //                 HELPER FUNCTIONS
 //******************************************************
-
-/**
- * Updates (increments) the total angry reactions counter in MongoDB.
- * @param {Number} amount Number of angry reactions to be added to the counter
- */
-function incrementAngryCounter(amount) {
-    const body = `{"amount":${amount}}`;
-    fetch(apiUrl + "angry-count", {
-        "method": "POST",
-        "body": body,
-        "headers": { 
-            "Content-Type": "application/json",
-            "Content-Length": body.length,
-        },
-    }).catch((err) => console.error(err));
-}
-
-/**
- * Updates (increments) the total angry tarot reading counter in MongoDB
- * @param {Number} amount Amount of Angry tarots that should be incremented, default 1
- */
-function incrementTarotCounter(amount = 1) {
-    const body = `{"amount":${amount}}`;
-    fetch(apiUrl + "angry-tarot-count", {
-        "method": "POST",
-        "body": body,
-        "headers": { 
-            "Content-Type": "application/json",
-            "Content-Length": body.length,
-        },
-    }).catch((err) => console.error(err));
-}
-
-/**
- * Sends the number of total angry emojis sent on the server to the server api
- * @param {Number} amount The amount of total angry emojis sent
- */
-async function updateTotalAngryEmoji(amount) {
-    const body = `{"amount":${amount}}`;
-    fetch(apiUrl + "angry-emoji-count", {
-        "method": "POST",
-        "body": body,
-        "headers": { 
-            "Content-Type": "application/json",
-            "Content-Length": body.length,
-        },
-    }).catch((err) => console.error(err));
-}
-
-/**
- * Returns the total number of angry reactions done by the bot
- * @returns A Promise containing the toal amount of angry reactions by the bot
- */
-function getAngryCount() {
-    let promise = new Promise((resolve, reject) => {
-        fetch(apiUrl + "angry-count")
-            .then(res => res.json())
-            .then(json => {
-                resolve(json.angryCount);
-            }).catch((err) => {
-                reject(err);
-            });
-    });
-    return promise;
-}
-
-/**
- * Returns the total number of angry tarots read by the bot
- * @returns A Promise containing the total amount of angry tarots read by the bot
- */
-function getTarotCount() {
-    let promise = new Promise((resolve, reject) => {
-        fetch(apiUrl + "angry-tarot-count")
-            .then(res => res.json())
-            .then(json => {
-                resolve(json.angryTarotCount);
-            }).catch((err) => {
-                reject(err);
-            });
-    });
-    return promise;
-}
 
 /**
  * Adds a given array of reactions to a message on discord
@@ -548,7 +458,7 @@ async function rankAngryEmojis(sendChannel) {
                     }
                     result += `A total of ${totalAngryEmoji} angry Emojis have been sent here.\n`;
                     sendChannel.send(result);
-                    updateTotalAngryEmoji(totalAngryEmoji);
+                    StatHandler.incrementStat(StatHandler.TOTAL_ANGRY_EMOJIS_SENT, totalAngryEmoji);
                     allowLeaderboardCommand = true;
                 }
             });
@@ -607,7 +517,7 @@ async function rankAngrySpammers(sendChannel) {
                     });
                     result += `A total of ${totalAngryEmoji} angry Emojis have been sent here.\n`;
                     sendChannel.send(result);
-                    updateTotalAngryEmoji(totalAngryEmoji);
+                    StatHandler.incrementStat(StatHandler.TOTAL_ANGRY_EMOJIS_SENT, totalAngryEmoji);
                     allowLeaderboardCommand = true;
                 }
             });

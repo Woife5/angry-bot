@@ -21,6 +21,9 @@ Command | Description
 
 ## Other functions of this bot
 
+### Stat tracker
+Every day at 23:55 the bot saves all global stats to [this Google Sheet](https://discord.gg/pZrBRA75wz "Angry-Bot-Stats").
+
 ### Reactions
 Every message sent will be reacted angry. The amount of angry reactions can be set from 0 to 20.
 

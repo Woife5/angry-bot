@@ -1,6 +1,7 @@
 const {promises: {readFile, writeFile}} = require("fs");
 const statFile = "./stats-and-cache/angry-stats.json";
 const channelCacheFile = "./stats-and-cache/last-channel-updates.json";
+const GoogleSheetHandler = require("./google-sheets-handler.js");
 
 class AngryStatHandler {
     // Stat constants
@@ -41,6 +42,8 @@ class AngryStatHandler {
         }).catch(error => {
             console.error("Error reading cache File: " + error.message);
         });
+
+        setTimeout(this.saveStatsToGoogleSheet, (new Date().setHours(23, 55, 0, 0) - Date.now()));
     }
 
     incrementCencoredStat(userId, userName, amount = 1) {
@@ -264,12 +267,23 @@ class AngryStatHandler {
     }
 
     /**
-     * Write the statFile to the database
-     * DOES NOT DO ANYTHING RIGHT NOW, W.I.P.
+     * Write the statFile to the Google Stat Sheet
+     * This method is called every day at 23:55
+     * Do not call this method if not needed
      */
-    writeStatsToDB() {
-        // TODO write all current stats to the mongodb database? maybe sometime
-        this.lastDBUpdate = Date.now();
+    saveStatsToGoogleSheet() {
+        const data = [];
+        const today = new Date();
+        data.push(today.toLocaleDateString("de-AT"));
+        data.push(this.stats[this.BOT_ANGRY_REACTIONS]);
+        data.push(this.stats[this.TAROTS_READ]);
+        data.push(this.stats[this.DIVOTKEY_REACTIONS]);
+        data.push(this.stats[this.TIMES_CENCORED]);
+    
+        GoogleSheetHandler.saveToSheet(data);
+    
+        const timeUntilMidnight = (new Date().setHours(23, 55, 0, 0) - Date.now());
+        setTimeout(this.saveStatsToGoogleSheet, timeUntilMidnight);
     }
 }
 

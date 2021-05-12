@@ -105,5 +105,6 @@ dist
 
 # Custom and secret files
 settings.json
+credentials.json
 angry-stats.json
 stats-and-cache

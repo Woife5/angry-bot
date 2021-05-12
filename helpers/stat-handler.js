@@ -43,7 +43,7 @@ class AngryStatHandler {
             console.error("Error reading cache File: " + error.message);
         });
 
-        setTimeout(this.saveStatsToGoogleSheet, (new Date().setHours(23, 55, 0, 0) - Date.now()));
+        setTimeout(this.saveStatsToGoogleSheet, (new Date().setHours(24, 0, 0, 0) - Date.now()));
     }
 
     incrementCencoredStat(userId, userName, amount = 1) {
@@ -282,7 +282,7 @@ class AngryStatHandler {
     
         GoogleSheetHandler.saveToSheet(data);
     
-        const timeUntilMidnight = (new Date().setHours(23, 55, 0, 0) - Date.now());
+        const timeUntilMidnight = (new Date().setHours(24, 0, 0, 0) - Date.now());
         setTimeout(this.saveStatsToGoogleSheet, timeUntilMidnight);
     }
 }

@@ -210,6 +210,7 @@ client.on("message", (msg) => {
         if(!command) {
             let commands = "Possible Commands:\n";
             commands += "`" + prefix + " tarot` - Get your daily angry\n";
+            commands += "`" + prefix + " stats` - Get all current bot-stats\n";
             commands += "`" + prefix + " tarotcount` - See the number tarots I have read\n";
             commands += "`" + prefix + " count` - Get total amount of angry reactions\n";
             commands += "`" + prefix + " emojilist` - Get top angry emojis\n";
@@ -280,7 +281,19 @@ client.on("message", (msg) => {
         }else if(command === "myemojilist") {
             // Get list of all emojis by this user
             rankAngryEmojis(msg.channel, msg.author.id);
-        }else {
+        }else if(command === "stats") {
+            const angryReactions = StatHandler.getStat(StatHandler.BOT_ANGRY_REACTIONS);
+            const tarotsRead = StatHandler.getStat(StatHandler.TAROTS_READ);
+            const romanMentions = StatHandler.getStat(StatHandler.DIVOTKEY_REACTIONS);
+            const cencorships = StatHandler.getStat(StatHandler.TIMES_CENCORED);
+
+            let result = `I have reacted angry ${angryReactions.toLocaleString("de-AT")} times.\n`;
+            result += `I have read ${tarotsRead.toLocaleString("de-AT")} angry tarots.\n`;
+            result += `Roman has been mentioned ${romanMentions.toLocaleString("de-AT")} times.\n`;
+            result += `A total of ${cencorships.toLocaleString("de-AT")} messages have been cencored.\n`;
+
+            msg.channel.send(result);
+        }else{
             msg.reply(`That is not a command i know of 🥴`);
         }
     }

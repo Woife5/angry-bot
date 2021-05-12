@@ -43,7 +43,11 @@ class AngryStatHandler {
             console.error("Error reading cache File: " + error.message);
         });
 
-        setTimeout(this.saveStatsToGoogleSheet, (new Date().setHours(24, 0, 0, 0) - Date.now()));
+        // Set the bot to save stats every day at midnight
+        setTimeout(() => {
+            setInterval(this.saveStatsToGoogleSheet(), 86400000 );
+            this.saveStatsToGoogleSheet();
+        }, (new Date().setHours(24, 0, 0, 0) - Date.now()));
     }
 
     incrementCencoredStat(userId, userName, amount = 1) {
@@ -281,9 +285,6 @@ class AngryStatHandler {
         data.push(this.stats[this.TIMES_CENCORED]);
     
         GoogleSheetHandler.saveToSheet(data);
-    
-        const timeUntilMidnight = (new Date().setHours(24, 0, 0, 0) - Date.now());
-        setTimeout(this.saveStatsToGoogleSheet, timeUntilMidnight);
     }
 }
 

@@ -202,7 +202,7 @@ client.on("message", (msg) => {
             }
 
             if(command === "debug") {
-                updateTotalsForAllChannels(msg.channel);
+                StatHandler.saveStatsToGoogleSheet();
                 return;
             }
         }
@@ -293,6 +293,8 @@ client.on("message", (msg) => {
             result += `A total of ${cencorships.toLocaleString("de-AT")} messages have been cencored.\n`;
 
             msg.channel.send(result);
+        }else if(command === "8ball"){
+            //TODO wip.
         }else{
             msg.reply(`That is not a command i know of 🥴`);
         }

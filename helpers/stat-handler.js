@@ -45,7 +45,7 @@ class AngryStatHandler {
 
         // Set the bot to save stats every day at midnight
         setTimeout(() => {
-            setInterval(this.saveStatsToGoogleSheet(), 86400000 );
+            setInterval(this.saveStatsToGoogleSheet, 86400000 );
             this.saveStatsToGoogleSheet();
         }, (new Date().setHours(24, 0, 0, 0) - Date.now()));
     }

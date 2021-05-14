@@ -293,7 +293,7 @@ class AngryStatHandler {
             if(this.stats.tarots[i]) {
                 tarotData.push(this.stats.tarots[i]);
             } else {
-                tarotData.push("0");
+                tarotData.push(0);
             }
         }
 

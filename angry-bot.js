@@ -202,7 +202,8 @@ client.on("message", (msg) => {
             }
 
             if(command === "debug") {
-                StatHandler.saveStatsToGoogleSheet();
+                if(msg.author.id === "267281854690754561")
+                    StatHandler.saveStatsToGoogleSheet();
                 return;
             }
         }

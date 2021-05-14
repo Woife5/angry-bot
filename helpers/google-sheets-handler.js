@@ -70,6 +70,7 @@ function getNewToken(oAuth2Client, callback) {
  * Array that stores the data to be inserted into the google sheet
  */
 let values;
+let tarotValues;
 
 /**
  * Writes data to Angry Stat Google Sheet
@@ -94,14 +95,47 @@ function writeData(auth) {
     });
 }
 
+/**
+ * Writes tarot data to Angry Stat Google Sheet
+ */
+function writeTarotData(auth) {
+    const sheets = google.sheets({ version: 'v4', auth });
+    const resource = {
+        "values": tarotValues,
+    };
+    sheets.spreadsheets.values.append({
+        spreadsheetId: '1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc',
+        range: 'raw-tarot-data!A1',
+        valueInputOption: 'RAW',
+        resource: resource,
+    }, (err, result) => {
+        if (err) {
+            // Handle error
+            console.log(err);
+        } else {
+            console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange)
+        }
+    });
+}
+
 module.exports = {
     /**
      * Handles inserting data into The Angry-Bot-Stats Google Sheet
      * @param {Array<String>} data Array of Strings to insert into the Google Sheet
      */
-    async saveToSheet(data) {
+    saveToSheet(data) {
         values = [];
         values.push(data);
         authorize(credentials, writeData);
+    },
+
+    /**
+     * Handles inserting data into The Angry-Bot-Stats Google Sheet
+     * @param {Array<String>} data Array of Strings to insert into the Google Sheet
+     */
+    saveTarotDataToSheet(data) {
+        tarotValues = [];
+        tarotValues.push(data);
+        authorize(credentials, writeTarotData);
     }
 };

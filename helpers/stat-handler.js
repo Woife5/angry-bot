@@ -45,7 +45,7 @@ class AngryStatHandler {
 
         // Set the bot to save stats every day at midnight
         setTimeout(() => {
-            setInterval(this.saveStatsToGoogleSheet, 86400000 );
+            setInterval(this.saveStatsToGoogleSheet.bind(this), 86400000);
             this.saveStatsToGoogleSheet();
         }, (new Date().setHours(24, 0, 0, 0) - Date.now()));
     }
@@ -218,7 +218,7 @@ class AngryStatHandler {
     /**
      * Takes in an Array of Discord messages and searches through all of them for angry-emojis.
      * Updates the emoji-usage stats accordingly
-     * @param {Array<Meaasge>} newMessages An array of Discord messages
+     * @param {Array<Message>} newMessages An array of Discord messages
      */
     updateTotals(newMessages) {     
         newMessages.forEach(message => {
@@ -283,8 +283,21 @@ class AngryStatHandler {
         data.push(this.stats[this.TAROTS_READ]);
         data.push(this.stats[this.DIVOTKEY_REACTIONS]);
         data.push(this.stats[this.TIMES_CENCORED]);
-    
+
         GoogleSheetHandler.saveToSheet(data);
+
+        const tarotData = [];
+        tarotData.push(today.toLocaleDateString("de-AT"));
+
+        for (let i = 0; i < 100; i++) {
+            if(this.stats.tarots[i]) {
+                tarotData.push(this.stats.tarots[i]);
+            } else {
+                tarotData.push("0");
+            }
+        }
+
+        GoogleSheetHandler.saveTarotDataToSheet(tarotData);
     }
 }
 

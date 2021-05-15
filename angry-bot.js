@@ -172,6 +172,22 @@ updateCustomReactions();
 
 client.on("message", (msg) => {
 
+    // Return if the bot is in debug mode
+    if(settings["debug"] && msg.author.id !== "267281854690754561") {
+        if(msg.content.startsWith(prefix)) {
+            msg.reply("I am right now being operated on x.x Try again later...");
+        }
+        return;
+    }
+
+    // Return if the bot is messaged privatley or not in the official angry discord
+    if(msg.channel.type !== "text" || msg.guild.id !== "824231029983412245") {
+        if(msg.content.startsWith(prefix)) {
+            msg.channel.send("https://discord.gg/pZrBRA75wz");
+        }
+        return;
+    }
+
     // Only react on messages not sent by the bot
     if(msg.author.id == botID)
         return;
@@ -204,6 +220,11 @@ client.on("message", (msg) => {
             if(command === "debug") {
                 if(msg.author.id === "267281854690754561")
                     StatHandler.saveStatsToGoogleSheet();
+                return;
+            }
+            
+            if(command === "removesavedemoji") {
+                StatHandler.removeSavedEmoji();
                 return;
             }
         }

@@ -50,6 +50,21 @@ class AngryStatHandler {
         }, (new Date().setHours(24, 0, 0, 0) - Date.now()));
     }
 
+    removeSavedEmoji() {
+        this.lastCachedMessages = {};
+        this.stats.emojis = {};
+        const allUsers = Object.keys(this.stats.users);
+        for (let i = 0; i < allUsers.length; i++) {
+            this.stats.users[allUsers[i]].emojis = {};
+            this.stats.users[allUsers[i]]["emojis-sent"] = 0;
+        }
+
+        this.writeStatsToFs();
+        writeFile(channelCacheFile, JSON.stringify(this.lastCachedMessages)).catch(err => {
+            console.error(err);
+        });
+    }
+
     incrementCencoredStat(userId, userName, amount = 1) {
         if(!this.stats.users[userId]) {
             this.stats.users[userId] = {

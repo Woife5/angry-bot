@@ -241,8 +241,21 @@ client.on("message", (msg) => {
         cencoredContent = cencoredContent.replaceAll("😡", "`CENCORED` ");
         cencoredContent = cencoredContent.replaceAll("🤬", "`CENCORED` ");
 
+        // Max message length: 1975 (@mention takes 25 characters)
+        // "\nThat is illegal!" are 17 characters, `CENSORED` are 10
+        // To be save, cut everything beyond 1940 chars
+        if(cencoredContent.length >= 1940) {
+            const cutAt = cencoredContent.indexOf("`CENSORED` ", 1800);
+            if(cutAt < 0 || cutAt > 1940) {
+                cencoredContent = cencoredContent.substr(0, 1940);
+            }else {
+                cencoredContent = cencoredContent.substr(0, cutAt + 10);
+            }
+        }
+        cencoredContent += "\nThat is illegal!";
 
-        msg.reply(cencoredContent + "\nThat is illegal!");
+        msg.reply(cencoredContent);
+
         msg.delete().catch(err => {
             console.error(err);
         });

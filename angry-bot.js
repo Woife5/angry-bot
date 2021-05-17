@@ -1,10 +1,9 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-const {promises: {readFile, writeFile}} = require("fs");
+const {promises: {readFile, writeFile, readdir}} = require("fs");
 const settings = require("./config/settings.json");
 
-const Stats = require("./helpers/stat-handler.js");
-const StatHandler = new Stats();
+const StatHandler = require("./helpers/stat-handler.js");
 
 /**
  * Prefix for all angry-commands
@@ -27,17 +26,10 @@ const angryAmount = 5;
 let allowLeaderboardCommand = true;
 
 /**
- * Remember the daily angry emoji of all server users
- */
-let angryTarot = {};
-let angryTarotTexts;
-
-/**
  * All relevant File locations
  */
-const angryTarotCacheFile = "./stats-and-cache/angry-tarot-cache.json";
 const customReactionsFile = "./config/custom-reactions.json";
-const angryTarotFile = "./config/angry-tarot.json";
+
 
 /**
  * An object containing all custom reactions that can be updated while the bot is running
@@ -49,6 +41,17 @@ let customAngrys;
  */
 const angrys = require("./config/angry-emojis.json");
 
+// Import bot commands:
+client.commands = new Discord.Collection();
+readdir("./commands").then(files => {
+    files.filter(file => file.endsWith('.js'));
+
+    for(const file of files) {
+        const command = require(`./commands/${file}`);
+        client.commands.set(command.name, command);
+    }
+})
+
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setStatus("online");
@@ -57,16 +60,7 @@ client.on("ready", () => {
 
 client.login(settings["client-secret"]);
 
-// Read angry tarot texts into an array
-readFile(angryTarotFile).then(fileBuffer => {
-    angryTarotTexts = JSON.parse(fileBuffer.toString());
-}).catch(error => {
-    console.error("Error reading File: " + error.message);
-    process.exit(1);
-});
-
 // Read custom config from fs while bot is starting
-loadCachedTarots();
 updateCustomReactions();
 
 client.on("message", (msg) => {
@@ -96,6 +90,18 @@ client.on("message", (msg) => {
         // Message is a command
         const args = msg.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
+
+        if(client.commands.has(command)) {
+            console.log("Found command in collection, executing...");
+
+            try {
+                client.commands.get(command).execute(msg, args);
+            } catch (error) {
+                console.error(error);
+                msg.reply("An error occured 🥴");
+            }
+            return;
+        }
 
         // Admin commands
         if(msg.author.id === "267281854690754561" || msg.author.id === "138678366730452992" || msg.author.id === "351375977303244800") {
@@ -146,54 +152,6 @@ client.on("message", (msg) => {
             }
 
             msg.channel.send(commands);
-        }else if(command === "tarot") {
-            const amountOfTarots = 100;
-
-            // If the user has already a tarot cached that was read today, be angry with him
-            if(angryTarot[msg.author.id] && 
-                angryTarot[msg.author.id].timestamp > new Date().setHours(0,0,0,0) && 
-                angryTarot[msg.author.id].timestamp < new Date().setHours(24,0,0,0)) {
-
-                    let text = angryTarotTexts[angryTarot[msg.author.id].tarot].text;
-                    text = text.replaceAll(":angry:", angrys[angryTarot[msg.author.id].tarot]);
-                    
-                    let options = {};
-                    if(angryTarotTexts[angryTarot[msg.author.id].tarot].files) {
-                        options = {"files": angryTarotTexts[angryTarot[msg.author.id].tarot].files};
-                    }
-                    msg.reply(`I already told you, your angry today is ${angrys[angryTarot[msg.author.id].tarot]}.\n${text}\n\nYou can get a new one tomorrow (in ${(new Date().setHours(24, 0, 0, 0) - Date.now())/60000} Minutes).`, options);
-            } else {
-                msg.reply(`Let me sense your angry...`);
-                // Assign a new random daily angry emoji
-                const dailyAngry = Math.floor(Math.random() * amountOfTarots);
-                angryTarot[msg.author.id] = {"tarot": dailyAngry, "timestamp": Date.now()};
-
-                StatHandler.incrementTarotStat(msg.author.id, msg.author.username, dailyAngry);
-
-                setTimeout(() => {
-                    let text = angryTarotTexts[dailyAngry].text;
-                    text = text.replaceAll(":angry:", angrys[dailyAngry]);
-
-                    let options = {};
-                    if(angryTarotTexts[dailyAngry].files) {
-                        options = {"files": angryTarotTexts[angryTarot[msg.author.id].tarot].files};
-                    }
-                    msg.reply(`Your angry today is :angry${dailyAngry+1}: ${angrys[dailyAngry]}\n\n${text}`, options);
-                }, 2000);
-
-                writeFile(angryTarotCacheFile, JSON.stringify(angryTarot))
-                    .catch((err) => {
-                        console.error("Writing cache failed: " + JSON.stringify(err));
-                    });
-            }
-        }else if(command === "count") {
-            // Get amount of angry reactions
-            const amount = StatHandler.getStat(StatHandler.BOT_ANGRY_REACTIONS);
-            msg.channel.send(`I have reacted angry ${amount.toLocaleString("de-AT")} times. ${angrys[0]}`);
-        }else if(command === "tarotcount") {
-            // Get amount of tartots read
-            const amount = StatHandler.getStat(StatHandler.TAROTS_READ);
-            msg.channel.send(`I have read angry tarots ${amount.toLocaleString("de-AT")} times.`);
         }else if(command === "emojilist") {
             // Get list of all emojis
             rankAngryEmojis(msg.channel);
@@ -203,18 +161,6 @@ client.on("message", (msg) => {
         }else if(command === "myemojilist") {
             // Get list of all emojis by this user
             rankAngryEmojis(msg.channel, msg.author.id);
-        }else if(command === "stats") {
-            const angryReactions = StatHandler.getStat(StatHandler.BOT_ANGRY_REACTIONS);
-            const tarotsRead = StatHandler.getStat(StatHandler.TAROTS_READ);
-            const romanMentions = StatHandler.getStat(StatHandler.DIVOTKEY_REACTIONS);
-            const cencorships = StatHandler.getStat(StatHandler.TIMES_CENCORED);
-
-            let result = `I have reacted angry ${angryReactions.toLocaleString("de-AT")} times.\n`;
-            result += `I have read ${tarotsRead.toLocaleString("de-AT")} angry tarots.\n`;
-            result += `Roman has been mentioned ${romanMentions.toLocaleString("de-AT")} times.\n`;
-            result += `A total of ${cencorships.toLocaleString("de-AT")} messages have been cencored.\n`;
-
-            msg.channel.send(result);
         }else if(command === "8ball"){
             //TODO wip.
         }else{
@@ -307,27 +253,6 @@ function updateCustomReactions() {
         customAngrys = JSON.parse(fileBuffer.toString());
     }).catch(error => {
         console.error("Error reading custom emojis: " + error.message);
-    });
-}
-
-/**
- * Loads all saved tarots from cache file
- */
-function loadCachedTarots() {
-    readFile(angryTarotCacheFile)
-    .then(fileBuffer => {
-        const data = JSON.parse(fileBuffer.toString());
-        angryTarot = {};
-
-        Object.entries(data).forEach(entry => {
-            const [key, value] = entry;
-
-            if(value.timestamp > new Date().setHours(0, 0, 0, 0)) {
-                angryTarot[key] = value;
-            }
-        });
-    }).catch(err => {
-        console.error("Error reading tarot cache: " + JSON.stringify(err));
     });
 }
 

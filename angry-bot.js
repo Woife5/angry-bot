@@ -245,11 +245,11 @@ client.on("message", (msg) => {
         // "\nThat is illegal!" are 17 characters, `CENSORED` are 10
         // To be save, cut everything beyond 1940 chars
         if(cencoredContent.length >= 1940) {
-            const cutAt = cencoredContent.indexOf("`CENSORED` ", 1800);
-            if(cutAt < 0 || cutAt > 1940) {
-                cencoredContent = cencoredContent.substr(0, 1940);
+            const cutAt = cencoredContent.indexOf(" ", 1850);
+            if(cutAt < 0 || cutAt > 1950) {
+                cencoredContent = cencoredContent.substr(0, 1950);
             }else {
-                cencoredContent = cencoredContent.substr(0, cutAt + 10);
+                cencoredContent = cencoredContent.substr(0, cutAt);
             }
         }
         cencoredContent += "\nThat is illegal!";

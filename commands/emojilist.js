@@ -10,20 +10,29 @@ module.exports = {
         let userName = "";
         if(msg.mentions.users.first()){
             userId = msg.mentions.users.first().id;
-            userName = " by " + msg.mentions.users.first().username;
+            userName = msg.mentions.users.first().username;
         }
 
         await TotalsUpdater.updateTotalsForAllChannels(msg.channel);
-        const emojiStats = StatHandler.getEmojiStats(userId);
+        let emojiStats;
+
+        if(userId) {
+            console.log("getting stats for: " + userId)
+            emojiStats = StatHandler.getUserEmojiStats(userId);
+        }else {
+            console.log("getting global stats")
+            emojiStats = StatHandler.getEmojiStats();
+        }
+
         if(!emojiStats) {
-            msg.channel.send("You have not sent any angry emojis.");
+            msg.channel.send(`${userName} has not sent any Angry Emojis.`);
             return;
         }
 
         let result = "";
         for (let i = 0; i < angrys.length; i++) {
             if(emojiStats[i+1]) {
-                result += angrys[i] + " sent " + emojiStats[i+1] + " times"+ userName +".\n";
+                result += angrys[i] + " sent " + emojiStats[i+1] + " times"+ (userId ? (" by " + userName) : "") +".\n";
             }
             if(result.length >= 1700) {
                 msg.channel.send(result);

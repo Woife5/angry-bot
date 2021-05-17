@@ -202,15 +202,18 @@ const StatHandler = {
     /**
      * Returns how often every emoji has been used, if a user ID is provided then
      * only the emoji usage for this one user is returned.
-     * @param {Number} userId Discord user ID (optional)
+     * @param {Number} userId Discord user ID
      * @returns How often all emojis have been used
      */
-    getEmojiStats(userId = null) {
+    getUserEmojiStats(userId) {
         if(userId && stats.users[userId]) {
             return stats.users[userId].emojis;
         } else {
-            return stats.emojis;
+            return null;
         }
+    },
+    getEmojiStats() {
+        return stats.emojis;
     },
 
     /**

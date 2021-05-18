@@ -3,78 +3,74 @@ const statFile = "./stats-and-cache/angry-stats.json";
 const channelCacheFile = "./stats-and-cache/last-channel-updates.json";
 const GoogleSheetHandler = require("./google-sheets-handler.js");
 
-class AngryStatHandler {
-    // Stat constants
-    BOT_ANGRY_REACTIONS = "angry-reactions-by-bot";
-    TAROTS_READ = "angry-tarots-read";
-    TOTAL_ANGRY_EMOJIS_SENT = "angry-emois-sent-total";
-    USER_ANGRY_EMOJIS_SENT = "emojis-sent";
-    USER_TAROTS_READ = "tarots-requested";
-    DIVOTKEY_REACTIONS = "angry-divotkey";
-    TIMES_CENCORED = "messages-cencored";
+let stats = {};
+let lastCachedMessages = {};
 
-    stats = {}
-    lastDBUpdate = 0;
-    lastCachedMessages = {};
-
-    /**
-     * Read statFile if present and load old stats, otherwise prepeare a new stat variable
-     */
-    constructor() {
-        readFile(statFile).then(fileBuffer => {
-            this.stats = JSON.parse(fileBuffer.toString());
-        }).catch(error => {
-            console.error("Error reading stat File: " + error.message);
-        }).finally(() => {
-            if(!this.stats.tarots) {
-                this.stats.tarots = {};
-            }
-            if(!this.stats.users){
-                this.stats.users = {};
-            }
-            if(!this.stats.emojis){
-                this.stats.emojis = {};
-            }
-        });
-
-        readFile(channelCacheFile).then(fileBuffer => {
-            this.lastCachedMessages = JSON.parse(fileBuffer.toString());
-        }).catch(error => {
-            console.error("Error reading cache File: " + error.message);
-        });
-
-        // Set the bot to save stats every day at midnight
-        setTimeout(() => {
-            setInterval(this.saveStatsToGoogleSheet.bind(this), 86400000);
-            this.saveStatsToGoogleSheet();
-        }, (new Date().setHours(24, 0, 0, 0) - Date.now()));
+// Initiate stats
+console.log("initiating stat handler...");
+readFile(statFile).then(fileBuffer => {
+    stats = JSON.parse(fileBuffer.toString());
+}).catch(error => {
+    console.error("Error reading stat File: " + error.message);
+}).finally(() => {
+    if(!stats.tarots) {
+        stats.tarots = {};
     }
+    if(!stats.users){
+        stats.users = {};
+    }
+    if(!stats.emojis){
+        stats.emojis = {};
+    }
+});
+
+readFile(channelCacheFile).then(fileBuffer => {
+    lastCachedMessages = JSON.parse(fileBuffer.toString());
+}).catch(error => {
+    console.error("Error reading cache File: " + error.message);
+});
+
+// Set the bot to save stats every day at midnight
+setTimeout(() => {
+    setInterval(saveStatsToGoogleSheet, 86400000);
+    saveStatsToGoogleSheet();
+}, (new Date().setHours(24, 0, 0, 0) - Date.now()));
+
+
+const StatHandler = {
+    // Stat constants
+    BOT_ANGRY_REACTIONS: "angry-reactions-by-bot",
+    TAROTS_READ: "angry-tarots-read",
+    TOTAL_ANGRY_EMOJIS_SENT: "angry-emois-sent-total",
+    USER_ANGRY_EMOJIS_SENT: "emojis-sent",
+    USER_TAROTS_READ: "tarots-requested",
+    DIVOTKEY_REACTIONS: "angry-divotkey",
+    TIMES_CENCORED: "messages-cencored",
 
     removeSavedEmoji() {
-        this.lastCachedMessages = {};
-        this.stats.emojis = {};
-        const allUsers = Object.keys(this.stats.users);
+        lastCachedMessages = {};
+        stats.emojis = {};
+        const allUsers = Object.keys(stats.users);
         for (let i = 0; i < allUsers.length; i++) {
-            this.stats.users[allUsers[i]].emojis = {};
-            this.stats.users[allUsers[i]]["emojis-sent"] = 0;
+            stats.users[allUsers[i]].emojis = {};
+            stats.users[allUsers[i]]["emojis-sent"] = 0;
         }
 
-        this.writeStatsToFs();
-        writeFile(channelCacheFile, JSON.stringify(this.lastCachedMessages)).catch(err => {
+        writeStatsToFs();
+        writeFile(channelCacheFile, JSON.stringify(lastCachedMessages)).catch(err => {
             console.error(err);
         });
-    }
-
+    },
     incrementCencoredStat(userId, userName, amount = 1) {
-        if(!this.stats.users[userId]) {
-            this.stats.users[userId] = {
+        if(!stats.users[userId]) {
+            stats.users[userId] = {
                 "name": userName
             };
         }
         
         this.incrementStat(this.TIMES_CENCORED, amount);
         this.incrementUserStat(userId, this.TIMES_CENCORED, amount);
-    }
+    },
 
     /**
      * Increments a stat in cache and FS
@@ -82,14 +78,14 @@ class AngryStatHandler {
      * @param {Number} value Increment stat by this amount, default = 1
      */
     incrementStat(key, value = 1) {
-        if(this.stats[key]) {
-            this.stats[key] += value;
+        if(stats[key]) {
+            stats[key] += value;
         } else {
-            this.stats[key] = value;
+            stats[key] = value;
         }
 
-        this.writeStatsToFs();
-    }
+        writeStatsToFs();
+    },
 
     /**
      * Reads a stat and returns it
@@ -97,31 +93,31 @@ class AngryStatHandler {
      * @returns A number representing a given stat
      */
     getStat(key) {
-        if(this.stats[key]) {
-            return this.stats[key];
+        if(stats[key]) {
+            return stats[key];
         }
-    }
+    },
 
     /**
      * Increments the counter for one individual tarot and sum of all tarots
      * @param {Number} tarot The tarot that was read and needs to be incremented
      */
     incrementTarotStat(userId, userName, tarot) {
-        if(this.stats.tarots[tarot]) {
-            this.stats.tarots[tarot] += 1;
+        if(stats.tarots[tarot]) {
+            stats.tarots[tarot] += 1;
         } else {
-            this.stats.tarots[tarot] = 1;
+            stats.tarots[tarot] = 1;
         }
 
-        if(!this.stats.users[userId]){
-            this.stats.users[userId] = {
+        if(!stats.users[userId]){
+            stats.users[userId] = {
                 "name": userName
             };
         }
 
         this.incrementStat(this.TAROTS_READ);
         this.incrementUserStat(userId, this.USER_TAROTS_READ);
-    }
+    },
 
     /**
      * This function returns the number of times a given tarot was read
@@ -129,12 +125,12 @@ class AngryStatHandler {
      * @returns The number of times the given tarot was read
      */
     getTarotStat(tarot) {
-        if(this.stats.tarots[tarot]) {
-            return this.stats.tarots[tarot];
+        if(stats.tarots[tarot]) {
+            return stats.tarots[tarot];
         } else {
             return 0;
         }
-    }
+    },
 
     /**
      * Sets a stat for a given user.
@@ -144,14 +140,14 @@ class AngryStatHandler {
      * @param {*} value Value of the stat
      */
     setUserStat(userId, userName, key, value) {
-        if(!this.stats.users[userId]) {
-            this.stats.users[userId] = {
+        if(!stats.users[userId]) {
+            stats.users[userId] = {
                 "name": userName,
             };
         }
         
-        this.stats.users[userId][key] = value;
-    }
+        stats.users[userId][key] = value;
+    },
     
     /**
      * Increments one stat entry for one user
@@ -160,12 +156,12 @@ class AngryStatHandler {
      * @param {Number} value Amount that the stat should be incremented
      */
     incrementUserStat(userId, key, value = 1) {
-        if(this.stats.users[userId][key]) {
-            this.stats.users[userId][key] += value;
+        if(stats.users[userId][key]) {
+            stats.users[userId][key] += value;
         } else {
-            this.stats.users[userId][key] = value;
+            stats.users[userId][key] = value;
         }
-    }
+    },
 
     /**
      * Increments the emoji usage stat for a given user
@@ -174,15 +170,15 @@ class AngryStatHandler {
      * @param {Number} amount Amount by which the stat is increased
      */
     incrementUserEmoji(userId, emoji, amount = 1) {
-        if(!this.stats.users[userId].emojis) 
-            this.stats.users[userId].emojis = {};
-        if(this.stats.users[userId].emojis[emoji]) {
-            this.stats.users[userId].emojis[emoji] += amount;
+        if(!stats.users[userId].emojis) 
+            stats.users[userId].emojis = {};
+        if(stats.users[userId].emojis[emoji]) {
+            stats.users[userId].emojis[emoji] += amount;
         } else {
-            this.stats.users[userId].emojis[emoji] = amount;
+            stats.users[userId].emojis[emoji] = amount;
         }
         this.incrementUserStat(userId, this.USER_ANGRY_EMOJIS_SENT, amount);
-    }
+    },
 
     /**
      * Returns all stats saved for a given user
@@ -190,32 +186,35 @@ class AngryStatHandler {
      * @returns All stats for the given user
      */
     getUserStats(userId) {
-        if(this.stats.users[userId]) {
-            return this.stats.users[userId];
+        if(stats.users[userId]) {
+            return stats.users[userId];
         }
-    }
+    },
 
     /**
      * Get all saved stats for all users
      * @returns All stats for all users
      */
     getAllUserStats() {
-        return this.stats.users;
-    }
+        return stats.users;
+    },
 
     /**
      * Returns how often every emoji has been used, if a user ID is provided then
      * only the emoji usage for this one user is returned.
-     * @param {Number} userId Discord user ID (optional)
+     * @param {Number} userId Discord user ID
      * @returns How often all emojis have been used
      */
-    getEmojiStats(userId = null) {
-        if(userId && this.stats.users[userId]) {
-            return this.stats.users[userId].emojis;
+    getUserEmojiStats(userId) {
+        if(userId && stats.users[userId]) {
+            return stats.users[userId].emojis;
         } else {
-            return this.stats.emojis;
+            return null;
         }
-    }
+    },
+    getEmojiStats() {
+        return stats.emojis;
+    },
 
     /**
      * Increments the total number a given angry-emoji has been used
@@ -223,12 +222,12 @@ class AngryStatHandler {
      * @param {Number} amount Amount by which the stat should be incremented (default 1)
      */
     incrementEmojiStat(emoji, amount = 1) {
-        if(this.stats.emojis[emoji]) {
-            this.stats.emojis[emoji] += amount;
+        if(stats.emojis[emoji]) {
+            stats.emojis[emoji] += amount;
         } else {
-            this.stats.emojis[emoji] = amount;
+            stats.emojis[emoji] = amount;
         }
-    }
+    },
 
     /**
      * Takes in an Array of Discord messages and searches through all of them for angry-emojis.
@@ -237,9 +236,9 @@ class AngryStatHandler {
      */
     updateTotals(newMessages) {     
         newMessages.forEach(message => {
-            if(!this.stats.users[message.author.id])
-                this.stats.users[message.author.id]= {};
-            this.stats.users[message.author.id].name = message.author.username;
+            if(!stats.users[message.author.id])
+                stats.users[message.author.id]= {};
+            stats.users[message.author.id].name = message.author.username;
             
             const regex = new RegExp("<:angry([0-9]{1,3}):[0-9]+>", "g");
             const matches = Array.from(message.cleanContent.matchAll(regex), m => m[1]);
@@ -249,7 +248,7 @@ class AngryStatHandler {
                 this.incrementEmojiStat(emoji);
             });
         });
-    }
+    },
 
     /**
      * Remembers the last message that has already been included in the stats
@@ -257,11 +256,11 @@ class AngryStatHandler {
      * @param {Number} messageId Discord message ID
      */
     setLastMessageId(channelId, messageId) {
-        this.lastCachedMessages[channelId] = messageId;
-        writeFile(channelCacheFile, JSON.stringify(this.lastCachedMessages)).catch(err => {
+        lastCachedMessages[channelId] = messageId;
+        writeFile(channelCacheFile, JSON.stringify(lastCachedMessages)).catch(err => {
             console.error(err);
         });
-    }
+    },
 
     /**
      * Returns the ID of the last message already included in the stats for a given channel
@@ -269,51 +268,51 @@ class AngryStatHandler {
      * @returns The ID of the last message already included in the stats
      */
     getLastMessageId(channelId) {
-        if(!this.lastCachedMessages[channelId]) {
+        if(!lastCachedMessages[channelId]) {
             return null;
         } else {
-            return this.lastCachedMessages[channelId];
+            return lastCachedMessages[channelId];
         }
-    }
-
-    /**
-     * Writes all currently saved stats to a file
-     */
-    writeStatsToFs() {
-        writeFile(statFile, JSON.stringify(this.stats)).catch((err) => {
-            console.error("Writing stats failed: " + JSON.stringify(err));
-        });
-    }
-
-    /**
-     * Write the statFile to the Google Stat Sheet
-     * This method is called every day at 23:55
-     * Do not call this method if not needed
-     */
-    saveStatsToGoogleSheet() {
-        const data = [];
-        const today = new Date();
-        data.push(today.toLocaleDateString("de-AT"));
-        data.push(this.stats[this.BOT_ANGRY_REACTIONS]);
-        data.push(this.stats[this.TAROTS_READ]);
-        data.push(this.stats[this.DIVOTKEY_REACTIONS]);
-        data.push(this.stats[this.TIMES_CENCORED]);
-
-        GoogleSheetHandler.saveToSheet(data);
-
-        const tarotData = [];
-        tarotData.push(today.toLocaleDateString("de-AT"));
-
-        for (let i = 0; i < 100; i++) {
-            if(this.stats.tarots[i]) {
-                tarotData.push(this.stats.tarots[i]);
-            } else {
-                tarotData.push(0);
-            }
-        }
-
-        GoogleSheetHandler.saveTarotDataToSheet(tarotData);
-    }
+    }    
 }
 
-module.exports = AngryStatHandler;
+/**
+ * Writes all currently saved stats to a file
+ */
+ function writeStatsToFs() {
+    writeFile(statFile, JSON.stringify(stats)).catch((err) => {
+        console.error("Writing stats failed: " + JSON.stringify(err));
+    });
+}
+
+/**
+ * Write the statFile to the Google Stat Sheet
+ * This method is called every day at 23:55
+ * Do not call this method if not needed
+ */
+ function saveStatsToGoogleSheet() {
+    const data = [];
+    const today = new Date();
+    data.push(today.toLocaleDateString("de-AT"));
+    data.push(stats[StatHandler.BOT_ANGRY_REACTIONS]);
+    data.push(stats[StatHandler.TAROTS_READ]);
+    data.push(stats[StatHandler.DIVOTKEY_REACTIONS]);
+    data.push(stats[StatHandler.TIMES_CENCORED]);
+
+    GoogleSheetHandler.saveToSheet(data);
+
+    const tarotData = [];
+    tarotData.push(today.toLocaleDateString("de-AT"));
+
+    for (let i = 0; i < 100; i++) {
+        if(stats.tarots[i]) {
+            tarotData.push(stats.tarots[i]);
+        } else {
+            tarotData.push(0);
+        }
+    }
+
+    GoogleSheetHandler.saveTarotDataToSheet(tarotData);
+}
+
+module.exports = StatHandler;

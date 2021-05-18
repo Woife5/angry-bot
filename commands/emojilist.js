@@ -4,7 +4,7 @@ const angrys = require("../config/angry-emojis.json");
 
 module.exports = {
 	name: 'emojilist',
-	description: 'Get top angry emojis, a user can be mentioned after "emojilist" to get only emojis sent by him.',
+	description: 'Get top angry emojis, a user can be mentioned to get only emojis sent by him.',
 	async execute(msg) {
         let userId = null;
         let userName = "";

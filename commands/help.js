@@ -10,13 +10,9 @@ readdir("./commands").then(files => {
         if(file == "help.js") {
             continue;
         }
-        
-        const command = require(`./commands/${file}`);
-        if(command.adminOnly) {
-            commands += "Admin only: ";
-        }else {
-            commands += `\`${prefix} ${command.name}\` - ${command.description}\n`;
-        }
+
+        const command = require(`./${file}`);
+        commands += `\`${prefix} ${command.name}\` - ${command.adminOnly ? "**admin only** - " : ""}${command.description}\n`;
     }
 })
 

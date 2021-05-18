@@ -1,13 +1,14 @@
 const {prefix} = require("../config/bot-constants.json");
 const {promises: {readdir}} = require("fs");
 
-let commands = "*Bot Version 4.0.1*\nPossible Commands:\n";
+let commands = "*Bot Version 4.0.2*\nPossible Commands:\n";
+const hiddenCommands = ["help.js", "censorship.js", "censored.js"];
 
 readdir("./commands").then(files => {
     files.filter(file => file.endsWith('.js'));
 
     for(const file of files) {
-        if(file == "help.js") {
+        if(hiddenCommands.includes(file)) {
             continue;
         }
 

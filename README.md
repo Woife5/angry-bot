@@ -1,6 +1,6 @@
 # Angry Bot
 
-`Version 4.0.2`
+`Version 4.0.3`
 
 A discord bot that reacts on every message with a set amount of angry emojis (5 currently).
 
@@ -24,7 +24,7 @@ Command | Description
 ## Other functions of this bot
 
 ### Stat tracker
-Every day at midnight the bot saves all global stats to [this Google Sheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vS-jr33D0n-QClwWn9TmhY51st3vJufZDZZyaNCZ1bmcVEEDCkG924exDYddWAn5ETf7Yi2LnqhlJEJ/pubhtml?gid=490395045&single=true "Angry-Bot-Stats"). These include Total Angry-reactions by the bot, Angry-Tarots read, roman mentions and messages cencored. The date refers to the stat at the start of the day (00:00).
+Every day at midnight the bot saves all global stats to [this Google Sheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vS-jr33D0n-QClwWn9TmhY51st3vJufZDZZyaNCZ1bmcVEEDCkG924exDYddWAn5ETf7Yi2LnqhlJEJ/pubhtml?gid=490395045&single=true "Angry-Bot-Stats"). These include Total Angry-reactions by the bot, Angry-Tarots read, roman mentions and messages cencored. Also included is user-specific data and how often every tarot has been read so far. The date refers to the stat at the start of the day (00:00).
 
 ### Reactions
 Every message sent will be reacted angry. The amount of angry reactions can be set from 0 to 20.

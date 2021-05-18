@@ -293,7 +293,8 @@ const StatHandler = {
  function saveStatsToGoogleSheet() {
     const data = [];
     const today = new Date();
-    data.push(today.toLocaleDateString("de-AT"));
+    const todayString = today.toLocaleDateString("de-AT");
+    data.push(todayString);
     data.push(stats[StatHandler.BOT_ANGRY_REACTIONS]);
     data.push(stats[StatHandler.TAROTS_READ]);
     data.push(stats[StatHandler.DIVOTKEY_REACTIONS]);
@@ -302,7 +303,7 @@ const StatHandler = {
     GoogleSheetHandler.saveToSheet(data);
 
     const tarotData = [];
-    tarotData.push(today.toLocaleDateString("de-AT"));
+    tarotData.push(todayString);
 
     for (let i = 0; i < 100; i++) {
         if(stats.tarots[i]) {
@@ -313,6 +314,47 @@ const StatHandler = {
     }
 
     GoogleSheetHandler.saveTarotDataToSheet(tarotData);
+
+    const userData = [];
+
+    const users = Object.entries(stats.users);
+    for ([key, value] of users) {
+        // Ignore name-less users
+        if(!value.name) {
+            continue;
+        }
+
+        // Add date first
+        const oneUser = [];
+        oneUser.push(todayString);
+        oneUser.push(value.name);
+
+        // Add tarot data if present
+        if(value[StatHandler.USER_TAROTS_READ]) {
+            oneUser.push(value[StatHandler.USER_TAROTS_READ]);
+        }else {
+            oneUser.push(0);
+        }
+
+        // Add emojis sent if present
+        if(value[StatHandler.USER_ANGRY_EMOJIS_SENT]) {
+            oneUser.push(value[StatHandler.USER_ANGRY_EMOJIS_SENT]);
+        }else {
+            oneUser.push(0);
+        }
+
+        // Add times this user has been censored
+        if(value[StatHandler.TIMES_CENCORED]) {
+            oneUser.push(value[StatHandler.TIMES_CENCORED]);
+        }else {
+            oneUser.push(0);
+        }
+
+        // Add to user array
+        userData.push(oneUser);
+    }
+
+    GoogleSheetHandler.saveUserDataToSheet(userData);
 }
 
 module.exports = StatHandler;

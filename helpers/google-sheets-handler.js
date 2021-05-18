@@ -71,6 +71,7 @@ function getNewToken(oAuth2Client, callback) {
  */
 let values;
 let tarotValues;
+let userValues;
 
 /**
  * Writes data to Angry Stat Google Sheet
@@ -118,6 +119,26 @@ function writeTarotData(auth) {
     });
 }
 
+function writeUserData(auth) {
+    const sheets = google.sheets({ version: 'v4', auth });
+    const resource = {
+        "values": userValues,
+    };
+    sheets.spreadsheets.values.append({
+        spreadsheetId: '1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc',
+        range: 'raw-user-data!A1',
+        valueInputOption: 'RAW',
+        resource: resource,
+    }, (err, result) => {
+        if (err) {
+            // Handle error
+            console.log(err);
+        } else {
+            console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange)
+        }
+    });
+}
+
 module.exports = {
     /**
      * Handles inserting data into The Angry-Bot-Stats Google Sheet
@@ -137,5 +158,14 @@ module.exports = {
         tarotValues = [];
         tarotValues.push(data);
         authorize(credentials, writeTarotData);
+    },
+
+    /**
+     * Saves user-specific data to google sheet
+     * @param {Array<Array<String>>} data Userdata, one user per line
+     */
+    saveUserDataToSheet(data) {
+        userValues = data;
+        authorize(credentials, writeUserData);
     }
 };

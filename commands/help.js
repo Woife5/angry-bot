@@ -1,7 +1,7 @@
 const {prefix} = require("../config/bot-constants.json");
 const {promises: {readdir}} = require("fs");
 
-let commands = "Possible Commands:\n";
+let commands = "*Bot Version 4.0.1*\nPossible Commands:\n";
 
 readdir("./commands").then(files => {
     files.filter(file => file.endsWith('.js'));

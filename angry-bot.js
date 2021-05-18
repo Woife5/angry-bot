@@ -7,6 +7,9 @@ const StatHandler = require("./helpers/stat-handler.js");
 
 const {prefix, botID, angryAmount} = require("./config/bot-constants.json");
 
+// Wolfgang, Felix, Vali Discord IDs
+const admins = ["267281854690754561", "138678366730452992", "351375977303244800"];
+
 /**
  * An object containing all custom reactions that can be updated while the bot is running
  */
@@ -67,11 +70,26 @@ client.on("message", (msg) => {
         if(client.commands.has(command)) {
 
             try {
-                client.commands.get(command).execute(msg, args);
+                const commandRef = client.commands.get(command);
+
+                if(commandRef.args && args.length < commandRef.args) {
+                    let reply = `You did not provide any arguments, ${msg.author}`;
+                    if(commandRef.usage) {
+                        reply += `\nThe proper usage would be: \`${prefix} ${commandRef.name} ${commandRef.usage}\``;
+                    }
+                    return msg.channel.send(reply);
+                }
+
+                if(commandRef.adminOnly && !admins.includes(msg.author.id) ) {
+                    return msg.channel.send(`You do not have permission to use this command 🥴`);
+                }
+
+                commandRef.execute(msg, args);
             } catch (error) {
                 console.error(error);
                 msg.reply("An error occured 🥴");
             }
+            return;
 
         } else {
             msg.reply(`That is not a command i know of 🥴`);
@@ -87,38 +105,8 @@ client.on("message", (msg) => {
     }
     //*/
 
-    // Check if a "normal" angry emoji has been used and cencor it
-    if(msg.content.includes("😠") ||
-        msg.content.includes("😡") ||
-        msg.content.includes("🤬")) {
-
-        let cencoredContent = msg.content.replaceAll("\\", "\\ ");
-        cencoredContent = cencoredContent.replaceAll("😠", "`CENCORED` ");
-        cencoredContent = cencoredContent.replaceAll("😡", "`CENCORED` ");
-        cencoredContent = cencoredContent.replaceAll("🤬", "`CENCORED` ");
-
-        // Max message length: 1975 (@mention takes 25 characters)
-        // "\nThat is illegal!" are 17 characters, `CENSORED` are 10
-        // To be save, cut everything beyond 1940 chars
-        if(cencoredContent.length >= 1940) {
-            const cutAt = cencoredContent.indexOf(" ", 1850);
-            if(cutAt < 0 || cutAt > 1950) {
-                cencoredContent = cencoredContent.substr(0, 1950);
-            }else {
-                cencoredContent = cencoredContent.substr(0, cutAt);
-            }
-        }
-        cencoredContent += "\nThat is illegal!";
-
-        msg.reply(cencoredContent);
-
-        msg.delete().catch(err => {
-            console.error(err);
-        });
-
-        StatHandler.incrementCencoredStat(msg.author.id, msg.author.username);
-
-        // Return immediatly if message is deleted.
+    // Check if something needs to be censored
+    if(client.commands.get("censorship").censor(msg)) {
         return;
     }
 

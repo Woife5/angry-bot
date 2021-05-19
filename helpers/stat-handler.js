@@ -273,7 +273,11 @@ const StatHandler = {
         } else {
             return lastCachedMessages[channelId];
         }
-    }    
+    },
+
+    exportStats() {
+        saveStatsToGoogleSheet();
+    }
 }
 
 /**

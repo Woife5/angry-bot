@@ -28,9 +28,18 @@ function authorize(credentials, callback) {
 
     // Check if we have previously stored a token.
     readFile(TOKEN_PATH).then(buffer => {
-        oAuth2Client.setCredentials(JSON.parse(buffer.toString()));
+        return new Promise((resolve, reject) => {
+            const googleToken = JSON.parse(buffer.toString());
+            if(googleToken["expiry_date"] < Date.now() ) {
+                reject("Token expired!");
+            } else {
+                resolve(googleToken);
+            }
+        });
+    }).then(token => {
+        oAuth2Client.setCredentials(token);
     }).catch(err => {
-        getNewToken(oAuth2Client, callback);
+        console.error(err);
     }).finally(() => {
         callback(oAuth2Client);
     });
@@ -167,5 +176,45 @@ module.exports = {
     saveUserDataToSheet(data) {
         userValues = data;
         authorize(credentials, writeUserData);
+    },
+
+    async tokenExpiresSoon() {
+        const buffer = await readFile(TOKEN_PATH);
+        const googleToken = JSON.parse(buffer.toString());
+        if(googleToken["expiry_date"] && googleToken["expiry_date"] > (Date.now() + 86400000)) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    /**
+     * The url that a new access token can be generated from
+     * @returns Google API auth url
+     */
+    async getTokenUrl() {
+        const { client_secret, client_id, redirect_uris } = credentials.installed;
+        const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+        return oAuth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES,
+        });
+    },
+
+    /**
+     * Generates a new 7-day access token to googles APIs
+     * @param {String} code new access code for google APIs
+     */
+    async setNewToken(code) {
+        try {
+            const { client_secret, client_id, redirect_uris } = credentials.installed;
+            const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+            const token = await oAuth2Client.getToken(code);
+
+            // Store token to disk
+            await writeFile(TOKEN_PATH, JSON.stringify(token.tokens));
+        } catch (error) {
+            console.error(error);
+        }
     }
 };

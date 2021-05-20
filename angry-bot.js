@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const {promises: {readdir}} = require("fs");
 const settings = require("./config/settings.json");
+const GoogleSheetHandler = require("./helpers/google-sheets-handler.js");
 
 const StatHandler = require("./helpers/stat-handler.js");
 
@@ -35,11 +36,18 @@ client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setStatus("online");
     client.user.setActivity(`"${prefix}"`, {type: "LISTENING"});
+    client.setInterval(updateGoogleToken, 86400000);
+    updateGoogleToken();
 });
 
 client.login(settings["client-secret"]);
 
 client.on("message", (msg) => {
+
+    // Check if message contains a new token string
+    if(msg.author.id === "267281854690754561" && msg.channel.type === "dm" && !msg.cleanContent.startsWith(prefix)) {
+        GoogleSheetHandler.setNewToken(msg.cleanContent);
+    }
 
     // Return if the bot is in debug mode
     if(settings["debug"] && msg.author.id !== "267281854690754561") {
@@ -140,5 +148,14 @@ client.on("message", (msg) => {
 async function addReactions(msg, reactions) {
     for(let i = 0; i < reactions.length; i++) {
         await msg.react(reactions[i]);
+    }
+}
+
+async function updateGoogleToken() {
+    const needsUpdating = await GoogleSheetHandler.tokenExpiresSoon();
+    if(needsUpdating){
+        const wolfgang = await client.users.fetch("267281854690754561");
+        const tokenUrl = await GoogleSheetHandler.getTokenUrl();
+        await wolfgang.send("It seems I will soon need a new Google API token...\n" + tokenUrl);
     }
 }

@@ -28,50 +28,11 @@ function authorize(credentials, callback) {
 
     // Check if we have previously stored a token.
     readFile(TOKEN_PATH).then(buffer => {
-        return new Promise((resolve, reject) => {
-            const googleToken = JSON.parse(buffer.toString());
-            if(googleToken["expiry_date"] < Date.now() ) {
-                reject("Token expired!");
-            } else {
-                resolve(googleToken);
-            }
-        });
-    }).then(token => {
-        oAuth2Client.setCredentials(token);
+        const googleToken = JSON.parse(buffer.toString());
+        oAuth2Client.setCredentials(googleToken);
+        callback(oAuth2Client);
     }).catch(err => {
         console.error(err);
-    }).finally(() => {
-        callback(oAuth2Client);
-    });
-}
-
-/**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
- * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback for the authorized client.
- */
-function getNewToken(oAuth2Client, callback) {
-    const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: SCOPES,
-    });
-    console.log('Authorize this app by visiting this url:', authUrl);
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-    rl.question('Enter the code from that page here: ', (code) => {
-        rl.close();
-        oAuth2Client.getToken(code, (err, token) => {
-            if (err) return console.error('Error while trying to retrieve access token', err);
-            oAuth2Client.setCredentials(token);
-            // Store the token to disk for later program executions
-            writeFile(TOKEN_PATH, JSON.stringify(token)).catch(err => {
-                console.error(err);
-            });
-            callback(oAuth2Client);
-        });
     });
 }
 
@@ -176,16 +137,6 @@ module.exports = {
     saveUserDataToSheet(data) {
         userValues = data;
         authorize(credentials, writeUserData);
-    },
-
-    async tokenExpiresSoon() {
-        const buffer = await readFile(TOKEN_PATH);
-        const googleToken = JSON.parse(buffer.toString());
-        if(googleToken["expiry_date"] && googleToken["expiry_date"] > (Date.now() + 86400000)) {
-            return false;
-        } else {
-            return true;
-        }
     },
 
     /**

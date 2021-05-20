@@ -36,8 +36,9 @@ client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
     client.user.setStatus("online");
     client.user.setActivity(`"${prefix}"`, {type: "LISTENING"});
-    client.setInterval(updateGoogleToken, 86400000);
-    updateGoogleToken();
+
+    // Send update request every 5 days
+    client.setInterval( updateGoogleToken, 432000000 );
 });
 
 client.login(settings["client-secret"]);
@@ -152,10 +153,7 @@ async function addReactions(msg, reactions) {
 }
 
 async function updateGoogleToken() {
-    const needsUpdating = await GoogleSheetHandler.tokenExpiresSoon();
-    if(needsUpdating){
-        const wolfgang = await client.users.fetch("267281854690754561");
-        const tokenUrl = await GoogleSheetHandler.getTokenUrl();
-        await wolfgang.send("It seems I will soon need a new Google API token...\n" + tokenUrl);
-    }
+    const wolfgang = await client.users.fetch("267281854690754561");
+    const tokenUrl = await GoogleSheetHandler.getTokenUrl();
+    await wolfgang.send("It seems I will soon need a new Google API token...\n" + tokenUrl);
 }

@@ -87,7 +87,12 @@ module.exports = {
             let allMessages;
             const lastMessageId = StatHandler.getLastMessageId(channel.id);
             if(lastMessageId) {
-                allMessages = await new_messages_getter(channel, lastMessageId);
+                try {
+                    allMessages = await new_messages_getter(channel, lastMessageId);
+                } catch (error) {
+                    console.error(error);
+                    console.error("Ignoring this channel for now...");
+                }
             } else {
                 allMessages = await all_messages_getter(channel);
             }

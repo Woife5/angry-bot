@@ -79,8 +79,9 @@ client.on("message", (msg) => {
     }
 
     // Handle feetpic channel
-    if(msg.channel.id === "846058921730113566" && (!msg.content.includes("🦶") || !msg.content.includes(":foot:"))) {
-        msg.delete({ reason: "This is not realated to feet!" });
+    if(msg.channel.id === "846058921730113566") {
+        if(!msg.cleanContent.includes("🦶") && msg.attachments.size <= 0)
+            msg.delete({ reason: "This is not realated to feet!" });
         return;
     }
 

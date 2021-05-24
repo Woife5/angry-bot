@@ -170,6 +170,11 @@ client.on("messageReactionAdd", async (messageReaction, user) => {
         if(messageReaction.emoji.toString() === "✅") {
             messageReaction.message.reactions.removeAll();
 
+            if(messageReaction.message.attachments.size <= 0) {
+                addReactions(messageReaction.message, [angrys[0], "🦶", angrys[1]]);
+                return;
+            }
+
             // Add rating to image
             const rating = Math.round(Math.random() * 9) + 1;
             const emoji = getRatingEmoji(rating);

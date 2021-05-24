@@ -80,7 +80,7 @@ client.on("message", (msg) => {
 
     // Handle feetpic channel
     if(msg.channel.id === "846058921730113566") {
-        if(!msg.content.includes("🦶") && msg.attachments.size <= 0) {
+        if(!(msg.content.includes("🦶") || msg.content.includes("🐾")) && msg.attachments.size <= 0) {
             msg.delete({ reason: "This is not realated to feet!" });
             StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
         } else {

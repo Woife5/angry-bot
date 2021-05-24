@@ -164,8 +164,11 @@ module.exports = {
 
             // Store token to disk
             await writeFile(TOKEN_PATH, JSON.stringify(token.tokens));
+
+            return true;
         } catch (error) {
             console.error(error);
+            return false;
         }
     }
 };

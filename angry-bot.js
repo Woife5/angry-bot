@@ -45,9 +45,21 @@ client.login(settings["client-secret"]);
 
 client.on("message", (msg) => {
 
+    // Only react on messages not sent by the bot
+    if(msg.author.id == botID)
+        return;
+
     // Check if message contains a new token string
     if(msg.author.id === "267281854690754561" && msg.channel.type === "dm" && !msg.cleanContent.startsWith(prefix)) {
-        GoogleSheetHandler.setNewToken(msg.cleanContent);
+        GoogleSheetHandler.setNewToken(msg.cleanContent).then(success => {
+            if(success) {
+                const validThru = new Date();
+                validThru.setDate(validThru.getDate() + 7);
+                msg.channel.send(`New token was set, valid until ${validThru.toLocaleDateString("de-AT")}`);
+            } else {
+                msg.channel.send("Error setting new token!");
+            }
+        })
     }
 
     // Return if the bot is in debug mode
@@ -66,9 +78,11 @@ client.on("message", (msg) => {
         return;
     }
 
-    // Only react on messages not sent by the bot
-    if(msg.author.id == botID)
+    // Handle feetpic channel
+    if(msg.channel.id === "846058921730113566" && (!msg.content.includes("🦶") || !msg.content.includes(":foot:"))) {
+        msg.delete({ reason: "This is not realated to feet!" });
         return;
+    }
 
     //* Handle commands
     if(msg.content.startsWith(prefix)) {

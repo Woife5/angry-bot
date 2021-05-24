@@ -80,8 +80,12 @@ client.on("message", (msg) => {
 
     // Handle feetpic channel
     if(msg.channel.id === "846058921730113566") {
-        if(!msg.cleanContent.includes("🦶") && msg.attachments.size <= 0)
+        if(!msg.content.includes("🦶") && msg.attachments.size <= 0) {
             msg.delete({ reason: "This is not realated to feet!" });
+            StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
+        } else {
+            addReactions(msg, ["✅", "❎"]);
+        }
         return;
     }
 
@@ -152,6 +156,31 @@ client.on("message", (msg) => {
     StatHandler.incrementStat(StatHandler.BOT_ANGRY_REACTIONS, angryAmount);
 });
 
+client.on("messageReactionAdd", async (messageReaction, user) => {
+
+    // Only do something in feetpic channel
+    if(admins.includes(user.id) && messageReaction.message.channel.id === "846058921730113566") {
+        if(messageReaction.emoji.toString() === "❎") {
+            StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
+            const message = await messageReaction.message.channel.send("`Image removed by moderator`\n`no feet 🦶`");
+            await messageReaction.message.delete({ reason: "Not approved by admin." });
+            message.delete({timeout: 10000, reason: "Not required any longer."});
+        }
+
+        if(messageReaction.emoji.toString() === "✅") {
+            messageReaction.message.reactions.removeAll();
+
+            // Add rating to image
+            const rating = Math.round(Math.random() * 9) + 1;
+            const emoji = getRatingEmoji(rating);
+            messageReaction.message.reply(`${rating}/10 🦶 ${emoji}`);
+
+            await messageReaction.message.react("🦶");
+            await messageReaction.message.react(emoji);
+        }
+    }
+})
+
 //******************************************************
 //                 HELPER FUNCTIONS
 //******************************************************
@@ -172,3 +201,50 @@ async function updateGoogleToken() {
     const tokenUrl = await GoogleSheetHandler.getTokenUrl();
     await wolfgang.send("It seems I will soon need a new Google API token...\n" + tokenUrl);
 }
+
+function getRatingEmoji(rating) {
+    let emoji = "";
+    switch (rating) {
+        case 1:
+            emoji = Math.random() > 0.5 ? "🤮" : "😭";
+            break;
+        case 2:
+            emoji = Math.random() > 0.5 ? "🤢" : "🤣";    
+            break;
+        case 3:
+            emoji = Math.random() > 0.5 ? "😟" : "🥲";    
+            break;
+        case 4:
+            emoji = Math.random() > 0.5 ? "🙄" : "😧";    
+            break;
+        case 5:
+            emoji = Math.random() > 0.5 ? "🙂" : "🤗";    
+            break;
+        case 6:
+            emoji = Math.random() > 0.5 ? "😋 " : "🥰";    
+            break;
+        case 7:
+            emoji = Math.random() > 0.5 ? "😳" : "😘";    
+            break;
+        case 8:
+            emoji = Math.random() > 0.5 ? "😍" : "😎";    
+            break;
+        case 9:
+            emoji = Math.random() > 0.5 ? "🥳" : "🤑";    
+            break;
+        case 10:
+            const possible = ["🥴","🥵","😱"];
+            emoji = possible[Math.round(Math.random()*(possible.length-1))];
+            break;
+    
+        default:
+            break;
+    }
+    return emoji;
+}
+
+ 
+
+ 
+
+

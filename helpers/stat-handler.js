@@ -46,6 +46,7 @@ const StatHandler = {
     USER_TAROTS_READ: "tarots-requested",
     DIVOTKEY_REACTIONS: "angry-divotkey",
     TIMES_CENCORED: "messages-cencored",
+    NON_FEET_RELATED_MESSAGES_DELETED: "non-feet-messages-deleted",
 
     removeSavedEmoji() {
         lastCachedMessages = {};
@@ -303,6 +304,7 @@ const StatHandler = {
     data.push(stats[StatHandler.TAROTS_READ]);
     data.push(stats[StatHandler.DIVOTKEY_REACTIONS]);
     data.push(stats[StatHandler.TIMES_CENCORED]);
+    data.push(stats[StatHandler.NON_FEET_RELATED_MESSAGES_DELETED]);
 
     GoogleSheetHandler.saveToSheet(data);
 

@@ -1,6 +1,6 @@
 # Angry Bot
 
-`Version 4.2.0`
+`Version 4.2.2`
 
 A discord bot that reacts on every message with a set amount of angry emojis (5 currently).
 
@@ -34,6 +34,9 @@ Every user can request a cutom angry reaction or reply. These custom reactions a
 
 ### Angry Emoji Cencorship
 If any user sends a normal angry emoji the bot will censor the message. The list of emojis to be censored can be altered by admins.
+
+### Feetpics
+The bot moderates the feetpic channel. Every message without the mention of feet will be removed. every image or file uploaded needs to be verified by an admin before being approved and rated.
 
 ## Admin Commands
 Command | Description

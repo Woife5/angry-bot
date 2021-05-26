@@ -47,6 +47,7 @@ const StatHandler = {
     DIVOTKEY_REACTIONS: "angry-divotkey",
     TIMES_CENCORED: "messages-cencored",
     NON_FEET_RELATED_MESSAGES_DELETED: "non-feet-messages-deleted",
+    YESNO_QUESTIONS_ANSWERED: "yesno-questions-answered",
 
     removeSavedEmoji() {
         lastCachedMessages = {};
@@ -305,6 +306,7 @@ const StatHandler = {
     data.push(stats[StatHandler.DIVOTKEY_REACTIONS]);
     data.push(stats[StatHandler.TIMES_CENCORED]);
     data.push(stats[StatHandler.NON_FEET_RELATED_MESSAGES_DELETED]);
+    data.push(stats[StatHandler.YESNO_QUESTIONS_ANSWERED]);
 
     GoogleSheetHandler.saveToSheet(data);
 
@@ -352,6 +354,13 @@ const StatHandler = {
         // Add times this user has been censored
         if(value[StatHandler.TIMES_CENCORED]) {
             oneUser.push(value[StatHandler.TIMES_CENCORED]);
+        }else {
+            oneUser.push(0);
+        }
+        
+        // Add yesno questions answered
+        if(value[StatHandler.TIMES_CENCORED]) {
+            oneUser.push(value[StatHandler.YESNO_QUESTIONS_ANSWERED]);
         }else {
             oneUser.push(0);
         }

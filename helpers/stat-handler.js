@@ -382,7 +382,7 @@ const StatHandler = {
         }
         
         // Add yesno questions answered
-        if(value[StatHandler.TIMES_CENCORED]) {
+        if(value[StatHandler.YESNO_QUESTIONS_ANSWERED]) {
             oneUser.push(value[StatHandler.YESNO_QUESTIONS_ANSWERED]);
         }else {
             oneUser.push(0);

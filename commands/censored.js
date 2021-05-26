@@ -17,6 +17,7 @@ async function readCache() {
 module.exports = {
 	name: 'censored',
 	description: 'Get a list of currently censored emojis',
+	hidden: true,
 	async execute(msg) {
         await readCache();
 

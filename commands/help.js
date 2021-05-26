@@ -3,17 +3,19 @@ const {promises: {readdir}} = require("fs");
 const {version} = require("../package.json");
 
 let commands = `*Bot Version ${version}*\nPossible Commands:\n`;
-const hiddenCommands = ["help.js", "censorship.js", "censored.js", "exportstats.js"];
 
 readdir("./commands").then(files => {
     files.filter(file => file.endsWith('.js'));
 
     for(const file of files) {
-        if(hiddenCommands.includes(file)) {
+        if(file === "help.js")
             continue;
-        }
 
         const command = require(`./${file}`);
+
+        if(command.hidden)
+            continue;
+
         commands += `\`${prefix} ${command.name}\` - ${command.adminOnly ? "**admin only** - " : ""}${command.description}\n`;
     }
 })

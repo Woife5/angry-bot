@@ -28,6 +28,7 @@ module.exports = {
 	adminOnly: true,
 	args: 2,
 	usage: "<add/remove> <Emoji/String>",
+	hidden: true,
 	execute(msg, args) {
         const subcommand = args.shift().toLowerCase().trim();
         const emoji = args.shift().toLowerCase().trim();

@@ -1,6 +1,6 @@
 # Angry Bot
 
-`Version 4.2.2`
+`Version 4.3.0`
 
 A discord bot that reacts on every message with a set amount of angry emojis (5 currently).
 
@@ -20,6 +20,7 @@ Command | Description
 `?angry emojilist`| Get a list of all angry emojis on the Discord Server and how often every single one has been used.
 `?angry topspammer`| Get a list of all Discord Server members and how many angry emojis they have sent on the Server.
 `?angry censored`| Get a list of all emojis and strings that are censored
+`?angry yesno`| Get a an answer to a yes/no question. Includes a nice gif to the answer
 
 ## Other functions of this bot
 

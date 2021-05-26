@@ -253,14 +253,14 @@ function getRatingEmoji(rating) {
  * @returns If the message is feet-related
  */
 function feetRelated(message) {
-    const text = message.toLocaleLowerCase().trim();
+    const text = message.toLowerCase().trim();
     const feetRelated = ["🦶", "👣", "🐾", "fuß", "feet", "fuss", "foot", "füsse", "füße"];
 
-    feetRelated.forEach(item => {
-        if(text.includes(item)) {
+    for (let i = 0; i < feetRelated.length; i++) {
+        if(text.includes(feetRelated[i])) {
             return true;
         }
-    });
+    }
 
     return false;
 }

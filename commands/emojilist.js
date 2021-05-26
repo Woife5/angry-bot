@@ -15,10 +15,8 @@ module.exports = {
         let emojiStats;
 
         if(userId) {
-            console.log("getting stats for: " + userId)
             emojiStats = StatHandler.getUserEmojiStats(userId);
         }else {
-            console.log("getting global stats")
             emojiStats = StatHandler.getEmojiStats();
         }
 

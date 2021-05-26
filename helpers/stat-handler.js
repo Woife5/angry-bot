@@ -3,6 +3,7 @@ const statFile = "./stats-and-cache/angry-stats.json";
 const channelCacheFile = "./stats-and-cache/last-channel-updates.json";
 const GoogleSheetHandler = require("./google-sheets-handler.js");
 
+let statLock = false;
 let stats = {};
 let lastCachedMessages = {};
 
@@ -35,7 +36,6 @@ setTimeout(() => {
     setInterval(saveStatsToGoogleSheet, 86400000);
     saveStatsToGoogleSheet();
 }, (new Date().setHours(24, 0, 0, 0) - Date.now()));
-
 
 const StatHandler = {
     // Stat constants
@@ -85,8 +85,7 @@ const StatHandler = {
         } else {
             stats[key] = value;
         }
-
-        writeStatsToFs();
+        writeStatsToFs()
     },
 
     /**
@@ -165,6 +164,7 @@ const StatHandler = {
         } else {
             stats.users[userId][key] = value;
         }
+        writeStatsToFs();
     },
 
     /**
@@ -300,12 +300,18 @@ const StatHandler = {
 }
 
 /**
- * Writes all currently saved stats to a file
+ * Writes all currently saved stats to a file if the file is not currently in use
  */
- function writeStatsToFs() {
-    writeFile(statFile, JSON.stringify(stats)).catch((err) => {
-        console.error("Writing stats failed: " + JSON.stringify(err));
-    });
+ async function writeStatsToFs() {
+    if(!statLock) {
+        statLock = true;
+        try {
+            await writeFile(statFile, JSON.stringify(stats));
+        } catch (err) {
+            console.error("Writing stats failed: " + JSON.stringify(err));
+        }
+        statLock = false;
+    }
 }
 
 /**

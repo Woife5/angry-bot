@@ -252,6 +252,21 @@ const StatHandler = {
                 this.incrementEmojiStat(emoji);
             });
         });
+        console.error("this should never be called now!");
+    },
+
+    updateEmojisSent(message) {
+        if(!stats.users[message.author.id])
+            stats.users[message.author.id]= {};
+        stats.users[message.author.id].name = message.author.username;
+        
+        const regex = new RegExp("<:angry([0-9]{1,3}):[0-9]+>", "g");
+        const matches = Array.from(message.cleanContent.matchAll(regex), m => m[1]);
+
+        matches.forEach(emoji => {
+            this.incrementUserEmoji(message.author.id, emoji);
+            this.incrementEmojiStat(emoji);
+        });
     },
 
     /**

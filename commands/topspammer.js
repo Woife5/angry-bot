@@ -1,12 +1,10 @@
 const StatHandler = require("../helpers/stat-handler.js");
-const TotalsUpdater = require("../helpers/totals-updater.js");
 
 module.exports = {
 	name: 'topspammer',
 	description: 'Get top angry spammers',
 	async execute(msg) {
-        await TotalsUpdater.updateTotalsForAllChannels(msg.channel);
-    
+
         const userStats = StatHandler.getAllUserStats();
         let result = "";
         const spammerArray = [];

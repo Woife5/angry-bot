@@ -1,5 +1,4 @@
 const StatHandler = require("../helpers/stat-handler.js");
-const TotalsUpdater = require("../helpers/totals-updater.js");
 const angrys = require("../config/angry-emojis.json");
 
 module.exports = {
@@ -13,7 +12,6 @@ module.exports = {
             userName = msg.mentions.users.first().username;
         }
 
-        await TotalsUpdater.updateTotalsForAllChannels(msg.channel);
         let emojiStats;
 
         if(userId) {

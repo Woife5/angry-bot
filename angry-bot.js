@@ -80,7 +80,8 @@ client.on("message", (msg) => {
 
     // Handle feetpic channel
     if(msg.channel.id === "846058921730113566") {
-        if(!(msg.content.includes("🦶") || msg.content.includes("🐾")) && msg.attachments.size <= 0) {
+        // Check if message if feet-related
+        if(!feetRelated(msg.content) && msg.attachments.size <= 0) {
             msg.delete({ reason: "This is not realated to feet!" });
             StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
         } else {
@@ -138,6 +139,8 @@ client.on("message", (msg) => {
     if(client.commands.get("censorship").censor(msg)) {
         return;
     }
+
+    StatHandler.updateEmojisSent(msg);
 
     // Check if custom reactions need to be applied
     if(msg.author.id in customAngrys) {
@@ -244,8 +247,20 @@ function getRatingEmoji(rating) {
     return emoji;
 }
 
- 
+/**
+ * Checks weather a message (string) is feet-related
+ * @param {String} message Content of a message
+ * @returns If the message is feet-related
+ */
+function feetRelated(message) {
+    const text = message.toLocaleLowerCase().trim();
+    const feetRelated = ["🦶", "👣", "🐾", "fuß", "feet", "fuss", "foot", "füsse", "füße"];
 
- 
+    feetRelated.forEach(item => {
+        if(text.includes(item)) {
+            return true;
+        }
+    });
 
-
+    return false;
+}

@@ -158,6 +158,8 @@ const StatHandler = {
      * @param {Number} value Amount that the stat should be incremented
      */
     incrementUserStat(userId, key, value = 1) {
+        if(!stats.users[userId])
+            stats.users[userId] = {};
         if(stats.users[userId][key]) {
             stats.users[userId][key] += value;
         } else {

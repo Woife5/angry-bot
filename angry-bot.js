@@ -254,7 +254,7 @@ function getRatingEmoji(rating) {
  */
 function feetRelated(message) {
     const text = message.toLowerCase().trim();
-    const feetRelated = ["🦶", "👣", "🐾", "fuß", "feet", "fuss", "foot", "füsse", "füße"];
+    const feetRelated = ["🦵", "🦶", "👣", "🐾", "fuß", "feet", "fuss", "foot", "füsse", "füße", "leg", "bein", "beine"];
 
     for (let i = 0; i < feetRelated.length; i++) {
         if(text.includes(feetRelated[i])) {

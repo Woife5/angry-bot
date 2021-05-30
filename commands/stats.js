@@ -6,8 +6,8 @@ module.exports = {
 	execute(msg) {
         let emojiStats = StatHandler.getEmojiStats();
 
-        emojiStats = Object.entries(stats.users);
-        const angryEmojis = 0;
+        emojiStats = Object.entries(emojiStats);
+        let angryEmojis = 0;
         for ([key, value] of emojiStats) {
             angryEmojis += value;
         }

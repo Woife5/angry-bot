@@ -160,6 +160,7 @@ client.on("message", (msg) => {
     StatHandler.incrementStat(StatHandler.BOT_ANGRY_REACTIONS, angryAmount);
 });
 
+// Handle reactions
 client.on("messageReactionAdd", async (messageReaction, user) => {
 
     // Only do something in feetpic channel
@@ -181,6 +182,28 @@ client.on("messageReactionAdd", async (messageReaction, user) => {
 
             await messageReaction.message.react("🦶");
             await messageReaction.message.react(emoji);
+        }
+    }
+});
+
+// Handle edited messages
+client.on("messageUpdate", (oldMessage, newMessage) => {
+    // A message has been updated
+
+    if(msg.guild.id !== "824231029983412245")
+        return;
+
+    // Check if the new message has to be censored
+    if(client.commands.get("censorship").censor(newMessage)) {
+        return;
+    }
+
+    // Check if the new message in the feetpic channel contains feet
+    if(msg.channel.id === "846058921730113566") {
+        // Check if message if feet-related
+        if(!feetRelated(msg.content)) {
+            msg.delete({ reason: "This is not realated to feet!" });
+            StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
         }
     }
 })

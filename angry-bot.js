@@ -190,7 +190,7 @@ client.on("messageReactionAdd", async (messageReaction, user) => {
 client.on("messageUpdate", (oldMessage, newMessage) => {
     // A message has been updated
 
-    if(msg.guild.id !== "824231029983412245")
+    if(newMessage.guild.id !== "824231029983412245")
         return;
 
     // Check if the new message has to be censored
@@ -199,10 +199,10 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
     }
 
     // Check if the new message in the feetpic channel contains feet
-    if(msg.channel.id === "846058921730113566") {
+    if(newMessage.channel.id === "846058921730113566") {
         // Check if message if feet-related
-        if(!feetRelated(msg.content)) {
-            msg.delete({ reason: "This is not realated to feet!" });
+        if(!feetRelated(newMessage.content)) {
+            newMessage.delete({ reason: "This is not realated to feet!" });
             StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
         }
     }

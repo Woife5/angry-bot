@@ -110,7 +110,7 @@ client.on("message", (msg) => {
                     return msg.channel.send(reply);
                 }
 
-                if(commandRef.adminOnly && !admins.includes(msg.author.id) ) {
+                if(commandRef.adminOnly && !msg.member.roles.cache.has("824234599936557097")) {
                     return msg.channel.send(`You do not have permission to use this command 🥴`);
                 }
 
@@ -206,7 +206,7 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
             StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
         }
     }
-})
+});
 
 //******************************************************
 //                 HELPER FUNCTIONS

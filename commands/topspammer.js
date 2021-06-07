@@ -17,6 +17,7 @@ module.exports = {
 
             const spammerObj = {
                 "name": value.name,
+                "id": key,
                 "angrys": value[StatHandler.USER_ANGRY_EMOJIS_SENT]
             };
             spammerArray.push(spammerObj);
@@ -27,7 +28,7 @@ module.exports = {
         });
 
         spammerArray.forEach((spammer) => {
-            result += `${spammer.name} sent ${spammer.angrys} angrys.\n`;
+            result += `<@${spammer.id}> sent ${spammer.angrys.toLocaleString("de-AT")} angry emojis.\n`;
             if(result.length >= 1900) {
                 msg.channel.send(result);
                 result = "";

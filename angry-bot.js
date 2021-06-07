@@ -3,6 +3,12 @@ const client = new Discord.Client();
 const {promises: {readdir}} = require("fs");
 const settings = require("./config/settings.json");
 const GoogleSheetHandler = require("./helpers/google-sheets-handler.js");
+const io = require("@pm2/io");
+let openReactions = 0;
+const openReactionsMetric = io.metric({
+    name: "Open reactions",
+    is: "angry/openReactions",
+});
 
 const StatHandler = require("./helpers/stat-handler.js");
 
@@ -154,9 +160,7 @@ client.on("message", (msg) => {
     }
 
     // React every message with the set amount of angrys
-    for (let i = 0; i < angryAmount; i++) {
-        msg.react(angrys[i]);
-    }
+    addReactions(msg, angrys.slice(0, angryAmount));
     StatHandler.incrementStat(StatHandler.BOT_ANGRY_REACTIONS, angryAmount);
 });
 
@@ -218,8 +222,11 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
  * @param {Array} reactions Array of reactions to add
  */
 async function addReactions(msg, reactions) {
+    openReactions += reactions.length;
+    openReactionsMetric.set(openReactions);
     for(let i = 0; i < reactions.length; i++) {
         await msg.react(reactions[i]);
+        openReactionsMetric.set(--openReactions);
     }
 }
 

@@ -5,8 +5,15 @@ const names = [
     'McLuhans',
     'McWuhans',
     'BigMcLuhans',
+    'McGluehans',
+    'McPaulihans',
+    'McLumihans',
+    'McRamonihans',
+    'Roman',
+    'Jürgen',
+    'McJohans'
 ];
-
+       //Dein Mediendispositiv komme, sein Wille geschehe, wie im *name* so im heiligen Angry.
 module.exports = {
 	name: 'luhans',
 	description: 'Get the time since the medien-t test',

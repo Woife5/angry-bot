@@ -21,10 +21,10 @@ module.exports = {
         msSinceKlausur -= dSinceKlausur*1000*60*60*24;
         
         const hSinceKlausur = Math.floor(msSinceKlausur/1000/60/60);
-        msSinceKlausur -= dSinceKlausur*1000*60*60;
+        msSinceKlausur -= hSinceKlausur*1000*60*60;
         
         const mSinceKlausur = Math.floor(msSinceKlausur/1000/60);
-        msSinceKlausur -= dSinceKlausur*1000*60;
+        msSinceKlausur -= mSinceKlausur*1000*60;
         
         const sSinceKlausur = Math.floor(msSinceKlausur/1000);
 

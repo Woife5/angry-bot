@@ -9,7 +9,7 @@ const names = [
 
 module.exports = {
 	name: 'luhans',
-	description: 'Get a random McLuhan name',
+	description: 'Get the time since the medien-t test',
     hidden: true,
 	execute(msg) {
         // Get a random name from the McLuhan name array
@@ -17,13 +17,13 @@ module.exports = {
 
         // Calculate the time since the medien-t test.
         let msSinceKlausur = Date.now() - medienKlausur.getTime();
-        const dSinceKlausur = msSinceKlausur/1000/60/60/24;
+        const dSinceKlausur = Math.floor(msSinceKlausur/1000/60/60/24);
         msSinceKlausur -= dSinceKlausur*1000*60*60*24;
         
-        const hSinceKlausur = msSinceKlausur/1000/60/60;
+        const hSinceKlausur = Math.floor(msSinceKlausur/1000/60/60);
         msSinceKlausur -= dSinceKlausur*1000*60*60;
         
-        const mSinceKlausur = msSinceKlausur/1000/60;
+        const mSinceKlausur = Math.floor(msSinceKlausur/1000/60);
         msSinceKlausur -= dSinceKlausur*1000*60;
         
         const sSinceKlausur = Math.floor(msSinceKlausur/1000);

@@ -3,6 +3,7 @@ const client = new Discord.Client();
 const {promises: {readdir}} = require("fs");
 const settings = require("./config/settings.json");
 const GoogleSheetHandler = require("./helpers/google-sheets-handler.js");
+const Helpers = require("./helpers/helper-functions.js");
 const io = require("@pm2/io");
 let openReactions = 0;
 const openReactionsMetric = io.metric({
@@ -181,6 +182,7 @@ client.on("messageReactionAdd", async (messageReaction, user) => {
 
             // Add rating to image
             const rating = Math.round(Math.random() * 9) + 1;
+            const rating = Helpers.getRandomInt(1, 10);
             const emoji = getRatingEmoji(rating);
             messageReaction.message.reply(`${rating}/10 🦶 ${emoji}`);
 
@@ -268,7 +270,7 @@ function getRatingEmoji(rating) {
             break;
         case 10:
             const possible = ["🥴","🥵","😱"];
-            emoji = possible[Math.round(Math.random()*(possible.length-1))];
+            emoji = possible[Helpers.getRandomInt(0, possible.length-1)];
             break;
     
         default:
@@ -284,7 +286,7 @@ function getRatingEmoji(rating) {
  */
 function feetRelated(message) {
     const text = message.toLowerCase().trim();
-    const feetRelated = ["🦵", "🦶", "👣", "🐾", "fuß", "feet", "fuss", "foot", "füsse", "füße", "leg", "bein", "beine"];
+    const feetRelated = ["🦵", "🦶", "👣", "🐾", "fuß", "feet", "fuss", "foot", "füsse", "füße", "leg", "bein"];
 
     for (let i = 0; i < feetRelated.length; i++) {
         if(text.includes(feetRelated[i])) {

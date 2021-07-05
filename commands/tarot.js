@@ -2,6 +2,7 @@ const StatHandler = require("../helpers/stat-handler.js");
 const angryTarotTexts = require("../config/angry-tarot.json");
 const {promises: {readFile, writeFile}} = require("fs");
 const angrys = require("../config/angry-emojis.json");
+const { getRandomInt } = require("../helpers/helper-functions.js");
 
 const angryTarotCacheFile = "./stats-and-cache/angry-tarot-cache.json";
 
@@ -48,7 +49,7 @@ module.exports = {
         } else {
             msg.reply(`Let me sense your angry...`);
             // Assign a new random daily angry emoji
-            const dailyAngry = Math.floor(Math.random() * amountOfTarots);
+            const dailyAngry = getRandomInt(0, amountOfTarots);
             angryTarot[msg.author.id] = {"tarot": dailyAngry, "timestamp": Date.now()};
 
             StatHandler.incrementTarotStat(msg.author.id, msg.author.username, dailyAngry);

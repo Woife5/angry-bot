@@ -5,10 +5,22 @@ const settings = require("./config/settings.json");
 const GoogleSheetHandler = require("./helpers/google-sheets-handler.js");
 const Helpers = require("./helpers/helper-functions.js");
 const io = require("@pm2/io");
+
+//******************************************************
+//                 PM2 metrics
+//******************************************************
+
+// Open reactions counter and pm2 metric
 let openReactions = 0;
 const openReactionsMetric = io.metric({
     name: "Open reactions",
     is: "angry/openReactions",
+    value: openReactions
+});
+
+// Errors while running counter
+const thrownErrors = io.counter({
+    name: "Thrown Errors"
 });
 
 const StatHandler = require("./helpers/stat-handler.js");
@@ -125,6 +137,7 @@ client.on("message", (msg) => {
             } catch (error) {
                 console.error(error);
                 msg.reply("An error occured 🥴");
+                thrownErrors.inc();
             }
             return;
 
@@ -227,7 +240,11 @@ async function addReactions(msg, reactions) {
     openReactions += reactions.length;
     openReactionsMetric.set(openReactions);
     for(let i = 0; i < reactions.length; i++) {
-        await msg.react(reactions[i]);
+        try {
+            await msg.react(reactions[i]);
+        } catch (error) {
+            thrownErrors.inc();
+        }
         openReactionsMetric.set(--openReactions);
     }
 }

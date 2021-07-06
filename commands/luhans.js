@@ -1,11 +1,5 @@
+const { getRandomInt } = require("../helpers/helper-functions.js");
 const StatHandler = require("../helpers/stat-handler.js");
-
-
-//This needs to be improved -> general access
-function getRandomInt(end){
-    return Math.floor(Math.random() * end);
-};
-
 
 const medienKlausur = new Date('2021-07-02T11:00:00');
 
@@ -36,7 +30,7 @@ const medienDispositive = [
     'Apperzeption ist die Aneignung eines Gegenstands durch das Zusammenspiel von sinnlicher und geistiger Wahrnehmung.',
     'Medien sind Erweiterungen des menschlichen Körpers.',
     '„Inhalt“ jedes Mediums immer ein anderes Medium.',
-    '„Denn die Botschaft jedes Mediums oder jeder Technik ist die Veränderung des Maßstabs, Tempos oder Schemas, die es der Situation des Menschen bringen”',
+    '„Die Botschaft jedes Mediums oder jeder Technik ist die Veränderung des Maßstabs, Tempos oder Schemas, die es der Situation des Menschen bringen.”',
     'Medien greifen Ausdrucks- und Darstellungsformen andere Medien auf, wenn diese sich bewährt haben oder kulturell attraktiv sind.',
     'Heißes Medium verlangt weniger Beteiligung als ein kaltes.',
     '*Auto*\nA. Dehnt die Privatsphäre aus, Menschen fahren in ihren Autos hinaus, um alleine zu sein.\nB. Veraltet Pferd und Wagen, Kombiwagen.\nC. Lässt die Sehnsucht nach der Suche wiederkehren: wie ein Ritter in glänzender Rüstung.\nD. Bis zu ihren Grenzen getrieben, verwandelt das Auto die Stadt in die AußenStadt oder VorStadt. Bringt das Gehen als Kunstform zurück.',
@@ -59,13 +53,13 @@ const geschmacksliste = [
 ];
 
 const funStuff = [
-    `Ich bin ${names[getRandomInt(names.length)]}, ich sehe ohne gesehen zu werden.`,
-    `Ich bin ${names[getRandomInt(names.length)]}, ich laufe rund und mich gibt's in vielen, verschiedenen Geschmäckern - ich bin ein Mediendispositiv in der ${geschmacksliste[getRandomInt(geschmacksliste.length)]}!`,
-    `Ich bin ${names[getRandomInt(names.length)]}, ich sehe ohne gesehen zu werden.`,
-    `Heute bist du ein ${names[getRandomInt(names.length)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(names.length)]}!`,
-    `Ich bin ${names[getRandomInt(names.length)]}, ich sehe ohne gesehen zu werden.`,
-    `Dein Mediendispositiv komme, ${names[getRandomInt(names.length)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
-    `Spüre die Wut der ${geschmacksliste[getRandomInt(geschmacksliste.length)]}!`,
+    `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
+    `Ich bin ${names[getRandomInt(0, names.length)]}, ich laufe rund und mich gibt's in vielen, verschiedenen Geschmäckern - ich bin ein Mediendispositiv in der ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
+    `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
+    `Heute bist du ein ${names[getRandomInt(0, names.length)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(0, names.length)]}!`,
+    `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
+    `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
+    `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
 ];
 
 module.exports = {
@@ -77,40 +71,40 @@ module.exports = {
         // This will store the text which the bot will send
         let returnText;
 
-        switch (getRandomInt(3)){
+        switch (getRandomInt(0, 3)){
 
             // Case to get fun stuff
-            case 0: returnText = funStuff[getRandomInt(funStuff.length)];
+            case 0: 
+                 // Calculate the time since the medien-t test.
+                 let msSinceKlausur = Date.now() - medienKlausur.getTime();
+                 const dSinceKlausur = Math.floor(msSinceKlausur/1000/60/60/24);
+                 msSinceKlausur -= dSinceKlausur*1000*60*60*24;
+                 
+                 const hSinceKlausur = Math.floor(msSinceKlausur/1000/60/60);
+                 msSinceKlausur -= hSinceKlausur*1000*60*60;
+                 
+                 const mSinceKlausur = Math.floor(msSinceKlausur/1000/60);
+                 msSinceKlausur -= mSinceKlausur*1000*60;
+                 
+                 const sSinceKlausur = Math.floor(msSinceKlausur/1000);
+ 
+                 // Setting the variables for the dynamic time description (difference between singular and plural)
+                 let hourText, minuteText, secondText; 
+ 
+                 // No need to calculate dayText since it has been days when this code was created!
+                 sSinceKlausur > 1 ? secondText = "Sekunden" : secondText = "Sekunde";
+                 mSinceKlausur > 1 ? minuteText = "Minuten" : minuteText = "Minute";
+                 hSinceKlausur > 1 ? hourText = "Stunden" : hourText = "Stunde";
+ 
+                 returnText = `Sei glücklich, es sind bereits ${dSinceKlausur} Tage ${hSinceKlausur} ${hourText} ${mSinceKlausur} ${minuteText} und ${sSinceKlausur} ${secondText} sind seit der Medientheorie Klausur mit ${names[getRandomInt(0, names.length)]} vergangen!\nIch hoffe, das macht dich wütend.`;
             break;
 
             // Case to get some proper medienDispositive!
-            case 1: returnText = medienDispositive[getRandomInt(medienDispositive.length)];
+            case 1: returnText = medienDispositive[getRandomInt(0, medienDispositive.length)];
             break;
-
+            
             // Good to know when this exam ended
-            case 2:
-                // Calculate the time since the medien-t test.
-                let msSinceKlausur = Date.now() - medienKlausur.getTime();
-                const dSinceKlausur = Math.floor(msSinceKlausur/1000/60/60/24);
-                msSinceKlausur -= dSinceKlausur*1000*60*60*24;
-                
-                const hSinceKlausur = Math.floor(msSinceKlausur/1000/60/60);
-                msSinceKlausur -= hSinceKlausur*1000*60*60;
-                
-                const mSinceKlausur = Math.floor(msSinceKlausur/1000/60);
-                msSinceKlausur -= mSinceKlausur*1000*60;
-                
-                const sSinceKlausur = Math.floor(msSinceKlausur/1000);
-
-                // Setting the variables for the dynamic time description (difference between singular and plural)
-                let hourText, minuteText, secondText; 
-
-                // No need to calculate dayText since it has been days when this code was created!
-                sSinceKlausur > 1 ? secondText = "Sekunden" : secondText = "Sekunde";
-                mSinceKlausur > 1 ? minuteText = "Minuten" : minuteText = "Minute";
-                hSinceKlausur > 1 ? hourText = "Stunden" : hourText = "Stunde";
-
-                returnText = `Sei glücklich, es sind bereits ${dSinceKlausur} Tage ${hSinceKlausur} ${hourText} ${mSinceKlausur} ${minuteText} und ${sSinceKlausur} ${secondText} sind seit der Medientheorie Klausur mit ${names[getRandomInt(names.length)]} vergangen!\nIch hoffe, das macht dich wütend.`;
+            case 2: returnText = funStuff[getRandomInt(0, funStuff.length)];
             break;
         }
 

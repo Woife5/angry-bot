@@ -65,7 +65,7 @@ const funStuff = [
 
 module.exports = {
 	name: 'luhans',
-	description: 'Get the time since the medien-t test',
+	description: 'Fun with luhans; some recollections to the media-t exam',
     hidden: true,
 	execute(msg) {
 

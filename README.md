@@ -21,7 +21,7 @@ Command | Description
 `?angry topspammer`| Get a list of all Discord Server members and how many angry emojis they have sent on the Server.
 `?angry censored`| Get a list of all emojis and strings that are censored
 `?angry yesno`| Get a an answer to a yes/no question. Includes a nice gif to the answer
-`?angry luhans`| Get the time since the medien-t test and a random McLuhan name with it
+`?angry luhans`| Fun with Luhans; some recollections to the media-t exam
 
 ## Other functions of this bot
 

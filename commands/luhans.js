@@ -35,6 +35,7 @@ const medienDispositive = [
     'Heißes Medium verlangt weniger Beteiligung als ein kaltes.',
     '*Auto*\nA. Dehnt die Privatsphäre aus, Menschen fahren in ihren Autos hinaus, um alleine zu sein.\nB. Veraltet Pferd und Wagen, Kombiwagen.\nC. Lässt die Sehnsucht nach der Suche wiederkehren: wie ein Ritter in glänzender Rüstung.\nD. Bis zu ihren Grenzen getrieben, verwandelt das Auto die Stadt in die AußenStadt oder VorStadt. Bringt das Gehen als Kunstform zurück.',
     'Dispositive steuern unsere Wahrnehmung (die Art und Weise), wie wir die Welt wahrnehmen.',
+    '-- Vergiss, was der Typ da sagen möchte; psssst, ich bin dein Easter-Egg! Verrate es niemanden, aber ich hab mich einmal in den Code eingeschleust und möchte dir einen tollen Tag wünschen, egal, wo und wann du dich gerade befindest ;) Genieße das Leben, man hat es ja einen bestimmten Tag auch nur ein Mal! Btw enjoy, falls du auch wie ich gerade nicht schlafen kannst: https://youtu.be/ExRi0qpKHoM --',
     'Dispositive sind Anordnungen unterschiedlicher Art, die regeln, wie die Menschen innerhalb einer Kultur etwas wahrnehmen, die Sichtbarkeit erzeugen, ohne selbst sichtbar zu sein.',
     'Mediendispositiv: Zusammenwirken verschiedener Ebenen, auf denen sich gesellschaftliche Normen und Werte formulieren, sich durchsetzen und damit Macht ausüben.',
     'Bevor das Kino die Erfüllung technischer Voraussetzungen und eines bestimmten Gesellschaftszustandes war (die für seine Realisierung und seine Vorstellung notwendig war), mag es zunächst das Ziel eines Wunsches gewesen sein, den übrigens sowohl sein unmittelbarer Erfolg als auch das von seinen Vorfahren geweckte Interesse hinlänglich zum Ausdruck brachten. Ein Wunsch, sagen wir mit Bedacht, eine Form von verloren gegangener Befriedigung, die auf die eine oder andere Form wiederzuerlangen das Ziel seines Dispositivs ist (bis hin zu ihrer Simulation) und zu welcher der Realitätseindruck den Schlüssel zu liefern scheint.',
@@ -96,11 +97,11 @@ module.exports = {
                  mSinceKlausur > 1 ? minuteText = "Minuten" : minuteText = "Minute";
                  hSinceKlausur > 1 ? hourText = "Stunden" : hourText = "Stunde";
  
-                 returnText = `Sei glücklich, es sind bereits ${dSinceKlausur} Tage ${hSinceKlausur} ${hourText} ${mSinceKlausur} ${minuteText} und ${sSinceKlausur} ${secondText} sind seit der Medientheorie Klausur mit ${names[getRandomInt(0, names.length)]} vergangen!\nIch hoffe, das macht dich wütend.`;
+                 returnText = `Sei glücklich, es sind bereits ${dSinceKlausur} Tage ${hSinceKlausur} ${hourText} ${mSinceKlausur} ${minuteText} und ${sSinceKlausur} ${secondText} sind seit der Medientheorie Klausur mit ${names[getRandomInt(0, names.length)]} vergangen!\nEine rachsüchtige Erinnerung - ich hoffe, sie macht dich wütend.`;
             break;
 
             // Case to get some proper medienDispositive!
-            case 1: returnText = medienDispositive[getRandomInt(0, medienDispositive.length)];
+            case 1: returnText = "Hallo, ich bin " + names[getRandomInt(0, names.length)] + " und das ist meine momentane, unverständliche Weisheit:\n" + medienDispositive[getRandomInt(0, medienDispositive.length)];
             break;
             
             // Good to know when this exam ended

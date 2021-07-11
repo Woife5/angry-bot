@@ -339,7 +339,7 @@ const StatHandler = {
  * This method is called every day at 23:55
  * Do not call this method if not needed
  */
- function saveStatsToGoogleSheet() {
+function saveStatsToGoogleSheet() {
     const data = [];
     const today = new Date();
     const todayString = today.toLocaleDateString("de-AT");

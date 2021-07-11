@@ -23,6 +23,7 @@ const thrownErrors = io.counter({
     name: "Thrown Errors"
 });
 
+// Import the stat handler 
 const StatHandler = require("./helpers/stat-handler.js");
 
 const {prefix, botID, angryAmount} = require("./config/bot-constants.json");
@@ -110,9 +111,8 @@ client.on("message", (msg) => {
         return;
     }
 
-    //* Handle commands
+    // Handle commands
     if(msg.content.startsWith(prefix)) {
-        // Message is a command
         const args = msg.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase() || "help";
 
@@ -145,21 +145,20 @@ client.on("message", (msg) => {
             msg.reply(`That is not a command i know of 🥴`);
         }
     }
-    //*/
 
-    //* Be extra angry if divotkey is mentioned
+    // Be extra angry if divotkey is mentioned
     if(msg.cleanContent.toLocaleLowerCase().includes("roman") || msg.cleanContent.toLocaleLowerCase().includes("divotkey"))
     {
         msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}\n:clock10: :rolling_eyes:`);
         StatHandler.incrementStat(StatHandler.DIVOTKEY_REACTIONS);
     }
-    //*/
 
-    // Check if something needs to be censored
+    // Check if the message needs to be censored
     if(client.commands.get("censorship").censor(msg)) {
         return;
     }
 
+    // Update the total emojis sent
     StatHandler.updateEmojisSent(msg);
 
     // Check if custom reactions need to be applied
@@ -207,7 +206,6 @@ client.on("messageReactionAdd", async (messageReaction, user) => {
 
 // Handle edited messages
 client.on("messageUpdate", (oldMessage, newMessage) => {
-    // A message has been updated
 
     if(newMessage.guild.id !== "824231029983412245")
         return;
@@ -249,12 +247,21 @@ async function addReactions(msg, reactions) {
     }
 }
 
+/**
+ * Send a message to wolfgang when the bot needs a new google auth token
+ */
 async function updateGoogleToken() {
     const wolfgang = await client.users.fetch("267281854690754561");
     const tokenUrl = await GoogleSheetHandler.getTokenUrl();
     await wolfgang.send("It seems I will soon need a new Google API token...\n" + tokenUrl);
 }
 
+/**
+ * Get the rating emoji for a given rating
+ * @param {Number} rating The rating to get the emoji for
+ * @returns {String} The emoji for the rating
+ * @example getRatingEmoji(1) // "🤮" || "😭"
+ */
 function getRatingEmoji(rating) {
     let emoji = "";
     switch (rating) {

@@ -48,7 +48,11 @@ const StatHandler = {
     TIMES_CENCORED: "messages-cencored",
     NON_FEET_RELATED_MESSAGES_DELETED: "non-feet-messages-deleted",
     YESNO_QUESTIONS_ANSWERED: "yesno-questions-answered",
+    MCLUHAN = 'mcluhan',
 
+    /**
+     * Resets the toal amount of emojis sent
+     */
     removeSavedEmoji() {
         lastCachedMessages = {};
         stats.emojis = {};
@@ -63,6 +67,13 @@ const StatHandler = {
             console.error(err);
         });
     },
+
+    /**
+     * Increments how often a user has been censored
+     * @param {string} userID The ID of the user
+     * @param {string} userName The name of the user
+     * @param {Number} amount How much the stat should be incremented
+     */
     incrementCencoredStat(userId, userName, amount = 1) {
         if(!stats.users[userId]) {
             stats.users[userId] = {
@@ -216,6 +227,11 @@ const StatHandler = {
             return null;
         }
     },
+
+    /**
+     * Returns the stats for all emojis that have been sent
+     * @returns All emoji stats
+     */
     getEmojiStats() {
         return stats.emojis;
     },
@@ -255,6 +271,10 @@ const StatHandler = {
         console.error("this should never be called now!");
     },
 
+    /**
+     * Takes a Discord message as input and updates the total amount of angry emojis sent
+     * @param {Message} message Discord message
+     */
     updateEmojisSent(message) {
         if(!stats.users[message.author.id])
             stats.users[message.author.id]= {};

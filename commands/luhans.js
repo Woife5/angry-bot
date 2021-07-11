@@ -109,6 +109,8 @@ module.exports = {
             break;
         }
 
+        // Incremnt the luhans stat
+        StatHandler.incrementStat(StatHandler.MCLUHAN);
 
         msg.channel.send(returnText);
 	},

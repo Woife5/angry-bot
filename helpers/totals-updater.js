@@ -4,7 +4,7 @@ const { botID } = require("../config/bot-constants.json");
 let allowLeaderboardCommand = true;
 
 /**
- * This function takes a dicord channel as argument and sreturns all found messages as an array
+ * This function takes a dicord channel as argument and returns all found messages as an array
  * @param {Channel} channel The channel that should be scraped
  * @returns An array containing all messages in the given Channel
  */
@@ -34,6 +34,12 @@ async function all_messages_getter(channel) {
     return sum_messages;
 }
 
+/**
+ * This function takes a dicord channel as argument and returns all new messages as an array
+ * @param {Channel} channel The channel that should be scraped
+ * @param {Number} after The ID of the message after which all messages should be scraped
+ * @returns An array containing all messages after the given message
+ */
 async function new_messages_getter(channel, after) {
     const sum_messages = [];
     let last_id = after;

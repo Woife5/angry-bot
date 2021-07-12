@@ -3,6 +3,7 @@ const StatHandler = require("../helpers/stat-handler.js");
 
 const medienKlausur = new Date('2021-07-02T11:00:00');
 
+// All cool names
 const names = [
     'McLuhans',
     'McWuhans',
@@ -14,10 +15,15 @@ const names = [
     'Roman',
     'Jürgen',
     'McJohans',
-    'Emsiger Eder'
+    'Emsiger Eder',
+    'Grantiger Eder',
+    'McFlueHans',
+    'McFeluHans',
+    'McWauWauWauWauWau',
+    'McUwUwUwU'
 ];
 
-//This needs to get into a json at some point
+// This needs to get into a json at some point
 const medienDispositive = [
     'Medien sind Vermittlungsinstanz, die zum einen zwischen Sprecher und Hörer, Produzent und Rezipient, die zum anderen zwischen dem Menschen und seiner Umwelt, die wir abgekürzt “Realität” nennen, vermitteln und in der Regel diese Realität oder Aspekte von ihr in einem Medienprodukt darstellen.',
     'Medien sind nicht nur „mimetisch“(Nachahmend), „reproduzierend“ oder „abbildend“, sondern sie erzeugen selbst eine eigene Realität. Wir nennen in Abgrenzung zur medialen “Realität” diese Welt und ihre Strukturen „Wirklichkeit“ und gehen davon aus, dass die Medien nicht nur insgesamt sondern auch jeweils als einzelnes Medium Medienwirklichkeiten entstehen lassen. Dabei geht es vor allem darum, dass die Medienwirklichkeit für den Menschen als Realität konstitutiv wird',
@@ -44,23 +50,18 @@ const medienDispositive = [
     '„Nicht Kinoglaz um des Kinoglas willen, sondern die Wahrheit mit den Mitteln des Kinoglaz, das ist Kinoprawda. Nicht die unverhoffte Aufnahme um der unverhofften Aufnahme willen, sondern um die Menschen zu zeigen ohne Maske, ohne Schminke, sie mit den Augen des Apparates zu packen im Moment des Nichtspielens. Ihre vom Kinoglas bloßgestellten Gedanken zu lesen.“'
 ];
 
+// This also needs to get into a json!
 const geschmacksliste = [
     'Wut der Faulheit',
     'Wut der Trockenheit',
     'Wut der Fledermaus',
     'Wut des Klebers',
     'Wut der Unwissenheit',
-    'Wut des Johans'
-];
-
-const funStuff = [
-    `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
-    `Ich bin ${names[getRandomInt(0, names.length)]}, ich laufe rund und mich gibt's in vielen, verschiedenen Geschmäckern - ich bin ein Mediendispositiv in der ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
-    `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
-    `Heute bist du ein ${names[getRandomInt(0, names.length)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(0, names.length)]}!`,
-    `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
-    `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
-    `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
+    'Wut des Johans',
+    'Wut der Einsamkeit',
+    'Wut des Knoblauchs',
+    'Wut der Unverständlichkeit'
+    //'Wut ta fuk is going on here'
 ];
 
 module.exports = {
@@ -71,6 +72,17 @@ module.exports = {
 
         // This will store the text which the bot will send
         let returnText;
+
+        // Having some random fun sentences
+        const funStuff = [
+            `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
+            `Ich bin ${names[getRandomInt(0, names.length)]}, ich laufe rund und mich gibt's in vielen, verschiedenen Geschmäckern - ich bin ein Mediendispositiv in der ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
+            `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
+            `Heute bist du ein ${names[getRandomInt(0, names.length)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(0, names.length)]}!`,
+            `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
+            `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
+            `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
+        ];
 
         switch (getRandomInt(0, 3)){
 

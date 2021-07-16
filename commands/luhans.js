@@ -20,7 +20,8 @@ const names = [
     'McFlueHans',
     'McFeluHans',
     'McWauWauWauWauWau',
-    'McUwUwUwU'
+    'McUwUwUwU',
+    'McHagUst'
 ];
 
 // This needs to get into a json at some point
@@ -41,7 +42,7 @@ const medienDispositive = [
     'Heißes Medium verlangt weniger Beteiligung als ein kaltes.',
     '*Auto*\nA. Dehnt die Privatsphäre aus, Menschen fahren in ihren Autos hinaus, um alleine zu sein.\nB. Veraltet Pferd und Wagen, Kombiwagen.\nC. Lässt die Sehnsucht nach der Suche wiederkehren: wie ein Ritter in glänzender Rüstung.\nD. Bis zu ihren Grenzen getrieben, verwandelt das Auto die Stadt in die AußenStadt oder VorStadt. Bringt das Gehen als Kunstform zurück.',
     'Dispositive steuern unsere Wahrnehmung (die Art und Weise), wie wir die Welt wahrnehmen.',
-    '-- Vergiss, was der Typ da sagen möchte; psssst, ich bin dein Easter-Egg! Verrate es niemanden, aber ich hab mich einmal in den Code eingeschleust und möchte dir einen tollen Tag wünschen, egal, wo und wann du dich gerade befindest ;) Genieße das Leben, man hat es ja einen bestimmten Tag auch nur ein Mal! Btw enjoy, falls du auch wie ich gerade nicht schlafen kannst: https://youtu.be/ExRi0qpKHoM --',
+    '-- Vergiss, was der Typ da sagen möchte; psssst, ich bin dein Easter-Egg! Verrate es niemanden, aber ich hab mich einmal in den Code eingeschleust und möchte dir einen tollen Tag wünschen, egal, wo und wann du dich gerade befindest ;) Genieße das Leben, man hat ja einen bestimmten Tag auch nur ein Mal! Btw enjoy, falls du auch wie ich gerade nicht schlafen kannst: https://youtu.be/ExRi0qpKHoM --',
     'Dispositive sind Anordnungen unterschiedlicher Art, die regeln, wie die Menschen innerhalb einer Kultur etwas wahrnehmen, die Sichtbarkeit erzeugen, ohne selbst sichtbar zu sein.',
     'Mediendispositiv: Zusammenwirken verschiedener Ebenen, auf denen sich gesellschaftliche Normen und Werte formulieren, sich durchsetzen und damit Macht ausüben.',
     'Bevor das Kino die Erfüllung technischer Voraussetzungen und eines bestimmten Gesellschaftszustandes war (die für seine Realisierung und seine Vorstellung notwendig war), mag es zunächst das Ziel eines Wunsches gewesen sein, den übrigens sowohl sein unmittelbarer Erfolg als auch das von seinen Vorfahren geweckte Interesse hinlänglich zum Ausdruck brachten. Ein Wunsch, sagen wir mit Bedacht, eine Form von verloren gegangener Befriedigung, die auf die eine oder andere Form wiederzuerlangen das Ziel seines Dispositivs ist (bis hin zu ihrer Simulation) und zu welcher der Realitätseindruck den Schlüssel zu liefern scheint.',
@@ -60,7 +61,9 @@ const geschmacksliste = [
     'Wut des Johans',
     'Wut der Einsamkeit',
     'Wut des Knoblauchs',
-    'Wut der Unverständlichkeit'
+    'Wut der Unverständlichkeit',
+    'Wut des hAgUsT',
+    'Wut des Spechts'
     //'Wut ta fuk is going on here'
 ];
 
@@ -82,6 +85,8 @@ module.exports = {
             `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
             `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
             `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
+            `Wut gibt es in vielen, verschiedenen Geschmacksrichtungen. Kennst du schon die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}`,
+            'Wut ist entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.'
         ];
 
         switch (getRandomInt(0, 3)){

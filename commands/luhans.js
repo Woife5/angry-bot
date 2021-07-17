@@ -70,7 +70,7 @@ const geschmacksliste = [
 module.exports = {
 	name: 'luhans',
 	description: 'Fun with luhans; some recollections to the media-t exam',
-    hidden: true,
+    hidden: false,
 	execute(msg) {
 
         // This will store the text which the bot will send

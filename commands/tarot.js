@@ -31,7 +31,7 @@ module.exports = {
 	name: 'tarot',
 	description: 'Get your daily angry tarot',
 	execute(msg) {
-        const amountOfTarots = 100;
+        const amountOfTarots = 150;
 
         // If the user has already a tarot cached that was read today, be angry with him
         if(angryTarot[msg.author.id] && 

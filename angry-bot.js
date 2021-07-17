@@ -193,7 +193,6 @@ client.on("messageReactionAdd", async (messageReaction, user) => {
             messageReaction.message.reactions.removeAll();
 
             // Add rating to image
-            const rating = Math.round(Math.random() * 9) + 1;
             const rating = Helpers.getRandomInt(1, 10);
             const emoji = getRatingEmoji(rating);
             messageReaction.message.reply(`${rating}/10 🦶 ${emoji}`);

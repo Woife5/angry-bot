@@ -89,7 +89,8 @@ module.exports = {
             'Wut ist entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.'
         ];
 
-        switch (getRandomInt(0, 3)){
+        // getRandomInt() returns a random integer between min (included) and max (also included)
+        switch (getRandomInt(0, 2)){
 
             // Case to get fun stuff
             case 0: 

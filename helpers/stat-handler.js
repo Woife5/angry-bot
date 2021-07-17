@@ -48,7 +48,7 @@ const StatHandler = {
     TIMES_CENCORED: "messages-cencored",
     NON_FEET_RELATED_MESSAGES_DELETED: "non-feet-messages-deleted",
     YESNO_QUESTIONS_ANSWERED: "yesno-questions-answered",
-    MCLUHAN = 'mcluhan',
+    MCLUHAN: 'mcluhan',
 
     /**
      * Resets the toal amount of emojis sent

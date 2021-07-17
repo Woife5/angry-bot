@@ -119,11 +119,11 @@ module.exports = {
             break;
 
             // Case to get some proper medienDispositive!
-            case 1: returnText = "Hallo, ich bin " + names[getRandomInt(0, names.length)] + " und das ist meine momentane, unverständliche Weisheit:\n" + medienDispositive[getRandomInt(0, medienDispositive.length)];
+            case 1: returnText = "Hallo, ich bin " + names[getRandomInt(0, names.length-1)] + " und das ist meine momentane, unverständliche Weisheit:\n" + medienDispositive[getRandomInt(0, medienDispositive.length-1)];
             break;
             
             // Good to know when this exam ended
-            case 2: returnText = funStuff[getRandomInt(0, funStuff.length)];
+            case 2: returnText = funStuff[getRandomInt(0, funStuff.length-1)];
             break;
         }
 

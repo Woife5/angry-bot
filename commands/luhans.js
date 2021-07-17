@@ -78,14 +78,14 @@ module.exports = {
 
         // Having some random fun sentences
         const funStuff = [
-            `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
-            `Ich bin ${names[getRandomInt(0, names.length)]}, ich laufe rund und mich gibt's in vielen, verschiedenen Geschmäckern - ich bin ein Mediendispositiv in der ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
-            `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
-            `Heute bist du ein ${names[getRandomInt(0, names.length)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(0, names.length)]}!`,
-            `Ich bin ${names[getRandomInt(0, names.length)]}, ich sehe ohne gesehen zu werden.`,
-            `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
-            `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}!`,
-            `Wut gibt es in vielen, verschiedenen Geschmacksrichtungen. Kennst du schon die ${geschmacksliste[getRandomInt(0, geschmacksliste.length)]}`,
+            `Ich bin ${names[getRandomInt(0, names.length-1)]}, ich sehe ohne gesehen zu werden.`,
+            `Ich bin ${names[getRandomInt(0, names.length-1)]}, ich laufe rund und mich gibt's in vielen, verschiedenen Geschmäckern - ich bin ein Mediendispositiv in der ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}!`,
+            `Ich bin ${names[getRandomInt(0, names.length-1)]}, ich sehe ohne gesehen zu werden.`,
+            `Heute bist du ein ${names[getRandomInt(0, names.length-1)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(0, names.length-1)]}!`,
+            `Ich bin ${names[getRandomInt(0, names.length-1)]}, ich sehe ohne gesehen zu werden.`,
+            `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length-1)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
+            `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}!`,
+            `Wut gibt es in vielen, verschiedenen Geschmacksrichtungen. Kennst du schon die ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}`,
             'Wut ist entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.'
         ];
 

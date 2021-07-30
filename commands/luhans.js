@@ -63,7 +63,8 @@ const geschmacksliste = [
     'Wut des Knoblauchs',
     'Wut der Unverständlichkeit',
     'Wut des hAgUsT',
-    'Wut des Spechts'
+    'Wut des Spechts',
+    'Wut der Füße'
     //'Wut ta fuk is going on here'
 ];
 
@@ -83,10 +84,10 @@ module.exports = {
             `Ich bin ${names[getRandomInt(0, names.length-1)]}, ich sehe ohne gesehen zu werden.`,
             `Heute bist du ein ${names[getRandomInt(0, names.length-1)]}. Sei glücklich und feiere wie ein ${names[getRandomInt(0, names.length-1)]}!`,
             `Ich bin ${names[getRandomInt(0, names.length-1)]}, ich sehe ohne gesehen zu werden.`,
-            `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length-1)]}s Wille geschehe, wie im HS4 so im heiligen Angry.`,
+            `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length-1)]}'s Wille geschehe, wie im HS4 so im heiligen Angry.`,
             `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}!`,
             `Wut gibt es in vielen, verschiedenen Geschmacksrichtungen. Kennst du schon die ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}?`,
-            'Wut ist entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.'
+            'Wut entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.'
         ];
 
         // getRandomInt() returns a random integer between min (included) and max (also included)
@@ -119,7 +120,7 @@ module.exports = {
             break;
 
             // Case to get some proper medienDispositive!
-            case 1: returnText = "Hallo, ich bin " + names[getRandomInt(0, names.length-1)] + " und das ist meine momentane, unverständliche Weisheit:\n" + medienDispositive[getRandomInt(0, medienDispositive.length-1)];
+            case 1: returnText = "Hallo, ich bin " + names[getRandomInt(0, names.length-1)] + " und das ist meine momentane, unverständliche Weisheit:\n\n" + medienDispositive[getRandomInt(0, medienDispositive.length-1)];
             break;
             
             // Good to know when this exam ended

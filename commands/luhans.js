@@ -87,7 +87,9 @@ module.exports = {
             `Dein Mediendispositiv komme, ${names[getRandomInt(0, names.length-1)]}'s Wille geschehe, wie im HS4 so im heiligen Angry.`,
             `Spüre die ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}!`,
             `Wut gibt es in vielen, verschiedenen Geschmacksrichtungen. Kennst du schon die ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}?`,
-            'Wut entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.'
+            'Wut entfaltet die größte Geschmacksexplosion, wenn du sie genießt - lasse sie zu! Wut schmeckt ohne geschmeckt zu werden.',
+            `Kennst du noch die roten Handschuhe? Sie sind der Inbegriff der ${geschmacksliste[getRandomInt(0, geschmacksliste.length-1)]}. Eine schöne Kontroverse, kaufe dir doch heute die blauen Handschuhe und schenke sie ${names[getRandomInt(0, names.length-1)]}! Heute ist ein Tag der Sauberkeit und Hygiene.`,
+            `Hast du schon einmal von dem Wutzyklus gehört? Nein, forsche doch in den heiligen Schriften des ${names[getRandomInt(0, names.length-1)]} im Kapitel des Mediendispositivs nach neuen Erkenntnissen in der Wut.`
         ];
 
         // getRandomInt() returns a random integer between min (included) and max (also included)

@@ -134,3 +134,11 @@ module.exports = {
         msg.channel.send(returnText);
 	},
 };
+
+/*
+ * // Get the Guild and store it under the variable "list"
+const list = client.guilds.get("335507048017952771"); 
+
+// Iterate through the collection of GuildMembers from the Guild getting the username property of each member 
+list.members.forEach(member => console.log(member.user.username)); 
+ */

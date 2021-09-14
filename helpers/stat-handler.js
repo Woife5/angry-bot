@@ -356,7 +356,7 @@ function saveStatsToGoogleSheet() {
     const tarotData = [];
     tarotData.push(todayString);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 150; i++) {
         if(stats.tarots[i]) {
             tarotData.push(stats.tarots[i]);
         } else {

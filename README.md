@@ -22,6 +22,7 @@ Command | Description
 `?angry censored`| Get a list of all emojis and strings that are censored
 `?angry yesno`| Get a an answer to a yes/no question. Includes a nice gif to the answer
 `?angry luhans`| Fun with Luhans; some recollections to the media-t exam
+`?angry bibleverse`| Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: `?angry bibleverse` or `?angry bibleverse 3 2 1` where the first argument is the book, the second argument is the chapter and the third argument is the verse.
 
 ## Other functions of this bot
 

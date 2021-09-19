@@ -5,14 +5,13 @@ const numberOfBooks = 66;
 
 module.exports = {
     name: "bibleverse",
-    description: "Get a random bible verse. Optionally a book, chapter and verse can ge provided via arguments to get a specific verse.",
+    description: `Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: \`${usage}\``,
     adminOnly: true,
     hidden: true,
     usage: "<?book> <?chapter> <?verse>",
     async execute(msg, args) {
-        return;
-        // This command is still in development and not active.
-        // adminOnly and hidden will be removed later as well as this return.
+        // This command is still in development.
+        // adminOnly and hidden will be removed later.
         
         let bookNR = null;
         let book = null;
@@ -23,7 +22,9 @@ module.exports = {
             if(!isNaN(tempBook) && tempBook > 0 && tempBook <= numberOfBooks) {
                 bookNR = tempBook;
             } else {
-                //TODO send error message: book not valid
+                // Send error message: invalid book
+                msg.reply("Invalid book number!");
+                return;
             }
         } else {
             // Get a random book
@@ -44,10 +45,14 @@ module.exports = {
                 if(book.chapters.length >= tempChapter) {
                     chapterNR = tempChapter;
                 } else {
-                    //TODO send error message: chapter not valid
+                    // send error message: chapter not valid
+                    msg.reply("Invalid chapter number!");
+                    return;
                 }
             } else {
-                // TODO send error message: wrong chapterNR input
+                // send error message: wrong chapterNR input
+                msg.reply("Invalid chapter number!");
+                return;
             }
         } else {
             // Get a random chapter
@@ -67,7 +72,8 @@ module.exports = {
                 if(chapter.verses.length >= tempVerse) {
                     verseNR = tempVerse;
                 } else {
-                    //TODO send error message: verse not valid
+                    // send error message: verse not valid
+                    msg.reply("Invalid verse number!");
                 }
             }
         } else {
@@ -77,11 +83,18 @@ module.exports = {
 
         verseText = chapter.verses[verseNR-1].text;
 
+        // Replace some words in the text with some random others
+        // TODO add some more words to replace
+        verseText = verseText.replaceAll("König", "Paul");
+
+        // Send the verse
+        msg.channel.send(`${verseText}\n***${chapter.verses[verseNR-1].name}***`);
+
         // 1. Get a random verse from the Bible
-        // TODO 2. Change some words for others
-        // TODO 3. Send the new verse
+        // 2. Change some words for others
+        // 3. Send the new verse
         // 4. add the ability to request a specific book/chapter/verse
-        // TODO 5. Handle faulty inputs
-        // TODO pls dont judge me for this f***ing mess ^^
+        // 5. Handle faulty inputs
+        // TO-DO pls dont judge me for this f***ing mess ^^
     }
 };

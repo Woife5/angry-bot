@@ -5,7 +5,7 @@ const numberOfBooks = 66;
 
 module.exports = {
     name: "bibleverse",
-    description: `Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: \`${usage}\``,
+    description: "Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: `?angry bibleverse <?book> <?chapter> <?verse>`",
     adminOnly: true,
     hidden: true,
     usage: "<?book> <?chapter> <?verse>",

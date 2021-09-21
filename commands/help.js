@@ -5,7 +5,7 @@ const {version} = require("../package.json");
 let commands = `*Bot Version ${version}*\nPossible Commands:\n`;
 
 readdir("./commands").then(files => {
-    files.filter(file => file.endsWith('.js'));
+    files = files.filter(file => file.endsWith('.js'));
 
     for(const file of files) {
         if(file === "help.js")

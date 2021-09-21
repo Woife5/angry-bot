@@ -44,7 +44,7 @@ const angrys = require("./config/angry-emojis.json");
 // Import bot commands:
 client.commands = new Discord.Collection();
 readdir("./commands").then(files => {
-    files.filter(file => file.endsWith('.js'));
+    files = files.filter(file => file.endsWith('.js'));
 
     for(const file of files) {
         const command = require(`./commands/${file}`);

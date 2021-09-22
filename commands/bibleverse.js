@@ -85,7 +85,14 @@ module.exports = {
 
         // Replace some words in the text with some random others
         // TODO add some more words to replace
-        verseText = verseText.replaceAll("König", "Paul");
+        verseText = verseText.replaceAll("König ", "Paul ");
+        verseText = verseText.replaceAll("Gott ", "Paul ");
+        verseText = verseText.replaceAll("Christus ", "Felix ");
+        verseText = verseText.replaceAll("Mose ", "Valentin ");
+        verseText = verseText.replaceAll("Priester ", "Roman ");
+        verseText = verseText.replaceAll("Diener ", "Irmi ");
+        verseText = verseText.replaceAll("Jehovas ", "Angrys ");
+        verseText = verseText.replaceAll("Jesu Christi ", "Wolfgang Rader ");
 
         // Send the verse
         msg.channel.send(`${verseText}\n***${chapter.verses[verseNR-1].name}***`);

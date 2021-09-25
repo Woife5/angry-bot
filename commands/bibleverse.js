@@ -6,8 +6,8 @@ const numberOfBooks = 66;
 module.exports = {
     name: "bibleverse",
     description: "Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: `?angry bibleverse <?book> <?chapter> <?verse>`",
-    adminOnly: true,
-    hidden: true,
+    adminOnly: false,
+    hidden: false,
     usage: "<?book> <?chapter> <?verse>",
     async execute(msg, args) {
         // This command is still in development.
@@ -84,7 +84,6 @@ module.exports = {
         verseText = chapter.verses[verseNR-1].text;
 
         // Replace some words in the text with some random others
-        // TODO add some more words to replace
         verseText = verseText.replaceAll("König ", "Paul ");
         verseText = verseText.replaceAll("Gott ", "Paul ");
         verseText = verseText.replaceAll("Christus ", "Felix ");
@@ -93,6 +92,8 @@ module.exports = {
         verseText = verseText.replaceAll("Diener ", "Irmi ");
         verseText = verseText.replaceAll("Jehovas ", "Angrys ");
         verseText = verseText.replaceAll("Jesu Christi ", "Wolfgang Rader ");
+        verseText = verseText.replaceAll("Engel ", "Axel ");
+        verseText = verseText.replaceAll("Sünder ", "Thomas ");
 
         // Send the verse
         msg.channel.send(`${verseText}\n***${chapter.verses[verseNR-1].name}***`);

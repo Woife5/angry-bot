@@ -1,14 +1,16 @@
-const readline = require('readline');
-const { google } = require('googleapis');
-const {promises: {readFile, writeFile}} = require("fs");
+const readline = require("readline");
+const { google } = require("googleapis");
+const {
+    promises: { readFile, writeFile },
+} = require("fs");
 
 // If modifying these scopes, delete token.json.
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
 /**
  * Google API Token file
  */
-const TOKEN_PATH = './stats-and-cache/google-token.json';
+const TOKEN_PATH = "./stats-and-cache/google-token.json";
 
 /**
  * Google API credentials
@@ -23,17 +25,18 @@ const credentials = require("../config/credentials.json");
  */
 function authorize(credentials, callback) {
     const { client_secret, client_id, redirect_uris } = credentials.installed;
-    const oAuth2Client = new google.auth.OAuth2(
-        client_id, client_secret, redirect_uris[0]);
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
 
     // Check if we have previously stored a token.
-    readFile(TOKEN_PATH).then(buffer => {
-        const googleToken = JSON.parse(buffer.toString());
-        oAuth2Client.setCredentials(googleToken);
-        callback(oAuth2Client);
-    }).catch(err => {
-        console.error(err);
-    });
+    readFile(TOKEN_PATH)
+        .then(buffer => {
+            const googleToken = JSON.parse(buffer.toString());
+            oAuth2Client.setCredentials(googleToken);
+            callback(oAuth2Client);
+        })
+        .catch(err => {
+            console.error(err);
+        });
 }
 
 /**
@@ -47,66 +50,75 @@ let userValues;
  * Writes data to Angry Stat Google Sheet
  */
 function writeData(auth) {
-    const sheets = google.sheets({ version: 'v4', auth });
+    const sheets = google.sheets({ version: "v4", auth });
     const resource = {
         values,
     };
-    sheets.spreadsheets.values.append({
-        spreadsheetId: '1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc',
-        range: 'raw-data!A1',
-        valueInputOption: 'RAW',
-        resource: resource,
-    }, (err, result) => {
-        if (err) {
-            // Handle error
-            console.log(err);
-        } else {
-            console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange)
+    sheets.spreadsheets.values.append(
+        {
+            spreadsheetId: "1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc",
+            range: "raw-data!A1",
+            valueInputOption: "RAW",
+            resource: resource,
+        },
+        (err, result) => {
+            if (err) {
+                // Handle error
+                console.log(err);
+            } else {
+                console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange);
+            }
         }
-    });
+    );
 }
 
 /**
  * Writes tarot data to Angry Stat Google Sheet
  */
 function writeTarotData(auth) {
-    const sheets = google.sheets({ version: 'v4', auth });
+    const sheets = google.sheets({ version: "v4", auth });
     const resource = {
-        "values": tarotValues,
+        values: tarotValues,
     };
-    sheets.spreadsheets.values.append({
-        spreadsheetId: '1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc',
-        range: 'raw-tarot-data!A1',
-        valueInputOption: 'RAW',
-        resource: resource,
-    }, (err, result) => {
-        if (err) {
-            // Handle error
-            console.log(err);
-        } else {
-            console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange)
+    sheets.spreadsheets.values.append(
+        {
+            spreadsheetId: "1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc",
+            range: "raw-tarot-data!A1",
+            valueInputOption: "RAW",
+            resource: resource,
+        },
+        (err, result) => {
+            if (err) {
+                // Handle error
+                console.log(err);
+            } else {
+                console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange);
+            }
         }
-    });
+    );
 }
 
 function writeUserData(auth) {
-    const sheets = google.sheets({ version: 'v4', auth });
+    const sheets = google.sheets({ version: "v4", auth });
     const resource = {
-        "values": userValues,
+        values: userValues,
     };
-    sheets.spreadsheets.values.append({
-        spreadsheetId: '1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc',
-        range: 'raw-user-data!A1',
-        valueInputOption: 'RAW',
-        resource: resource,
-    }, (err, result) => {
-        if (err) {
-            // Handle error
-            console.log(err);
-        } else {
-            console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange)
+    sheets.spreadsheets.values.append(
+        {
+            spreadsheetId: "1RTlHaLkJVtK15XNrAV-B3eyfRNPV-Vs_RVpvVLm8uLc",
+            range: "raw-user-data!A1",
+            valueInputOption: "RAW",
+            resource: resource,
+        },
+        (err, result) => {
+            if (err) {
+                // Handle error
+                console.log(err);
+            } else {
+                console.log("Stat-backup complete, updated cells: %s", result.data.updates.updatedRange);
+            }
         }
-    });
+    );
 }
 
 module.exports = {
@@ -147,7 +159,7 @@ module.exports = {
         const { client_secret, client_id, redirect_uris } = credentials.installed;
         const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
         return oAuth2Client.generateAuthUrl({
-            access_type: 'offline',
+            access_type: "offline",
             scope: SCOPES,
         });
     },
@@ -170,5 +182,5 @@ module.exports = {
             console.error(error);
             return false;
         }
-    }
+    },
 };

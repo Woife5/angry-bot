@@ -1,9 +1,9 @@
 const StatHandler = require("../helpers/stat-handler.js");
 
 module.exports = {
-	name: 'stats',
-	description: 'Get a list of all global stats',
-	execute(msg) {
+    name: "stats",
+    description: "Get a list of all global stats",
+    execute(msg) {
         let emojiStats = StatHandler.getEmojiStats();
 
         emojiStats = Object.entries(emojiStats);
@@ -28,5 +28,5 @@ module.exports = {
         result += `I have deleted ${feetCensors.toLocaleString("de-AT")} messages not related to feet.\n`;
 
         msg.channel.send(result);
-	},
+    },
 };

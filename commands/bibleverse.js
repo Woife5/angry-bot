@@ -1,25 +1,26 @@
-const { getRandomInt } = require("../helpers/helper-functions.js")
+const { getRandomInt } = require("../helpers/helper-functions.js");
 const fetch = require("node-fetch");
 const bibleAPI = "https://getbible.net/v2/elberfelder/";
 const numberOfBooks = 66;
 
 module.exports = {
     name: "bibleverse",
-    description: "Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: `?angry bibleverse <?book> <?chapter> <?verse>`",
+    description:
+        "Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: `?angry bibleverse <?book> <?chapter> <?verse>`",
     adminOnly: false,
     hidden: false,
     usage: "<?book> <?chapter> <?verse>",
     async execute(msg, args) {
         // This command is still in development.
         // adminOnly and hidden will be removed later.
-        
+
         let bookNR = null;
         let book = null;
 
         // Check if we got a valid book
-        if(args.length > 0) {
+        if (args.length > 0) {
             let tempBook = parseInt(args[0]);
-            if(!isNaN(tempBook) && tempBook > 0 && tempBook <= numberOfBooks) {
+            if (!isNaN(tempBook) && tempBook > 0 && tempBook <= numberOfBooks) {
                 bookNR = tempBook;
             } else {
                 // Send error message: invalid book
@@ -37,12 +38,12 @@ module.exports = {
         let chapterNR = null;
         let chapter = null;
 
-        if(args.length > 1) {
+        if (args.length > 1) {
             let tempChapter = parseInt(args[1]);
-            if(!isNaN(tempChapter) && tempChapter > 0) {
+            if (!isNaN(tempChapter) && tempChapter > 0) {
                 // check if the chapter is valid for the book
 
-                if(book.chapters.length >= tempChapter) {
+                if (book.chapters.length >= tempChapter) {
                     chapterNR = tempChapter;
                 } else {
                     // send error message: chapter not valid
@@ -60,16 +61,16 @@ module.exports = {
         }
 
         // Get the requested chapter
-        chapter = book.chapters[chapterNR-1];
+        chapter = book.chapters[chapterNR - 1];
         let verseNR = null;
         let verseText = null;
 
-        if(args.length > 2) {
+        if (args.length > 2) {
             let tempVerse = parseInt(args[2]);
-            if(!isNaN(tempVerse) && tempVerse > 0) {
+            if (!isNaN(tempVerse) && tempVerse > 0) {
                 // check if the verse is valid for the chapter
 
-                if(chapter.verses.length >= tempVerse) {
+                if (chapter.verses.length >= tempVerse) {
                     verseNR = tempVerse;
                 } else {
                     // send error message: verse not valid
@@ -81,7 +82,7 @@ module.exports = {
             verseNR = getRandomInt(1, chapter.verses.length);
         }
 
-        verseText = chapter.verses[verseNR-1].text;
+        verseText = chapter.verses[verseNR - 1].text;
 
         // Replace some words in the text with some random others
         verseText = verseText.replaceAll("König ", "Paul ");
@@ -96,7 +97,7 @@ module.exports = {
         verseText = verseText.replaceAll("Sünder ", "Thomas ");
 
         // Send the verse
-        msg.channel.send(`${verseText}\n***${chapter.verses[verseNR-1].name}***`);
+        msg.channel.send(`${verseText}\n***${chapter.verses[verseNR - 1].name}***`);
 
         // 1. Get a random verse from the Bible
         // 2. Change some words for others
@@ -104,5 +105,5 @@ module.exports = {
         // 4. add the ability to request a specific book/chapter/verse
         // 5. Handle faulty inputs
         // TO-DO pls dont judge me for this f***ing mess ^^
-    }
+    },
 };

@@ -30,9 +30,6 @@ const StatHandler = require("./helpers/stat-handler.js");
 
 const { prefix, botID, angryAmount } = require("./config/bot-constants.json");
 
-// Wolfgang, Felix, Vali Discord IDs
-const admins = ["267281854690754561", "138678366730452992", "351375977303244800"];
-
 /**
  * An object containing all custom reactions that can be updated while the bot is running
  */
@@ -45,8 +42,8 @@ const angrys = require("./config/angry-emojis.json");
 
 // Import bot commands:
 client.commands = new Discord.Collection();
-readdir("./commands").then((files) => {
-    files = files.filter((file) => file.endsWith(".js"));
+readdir("./commands").then(files => {
+    files = files.filter(file => file.endsWith(".js"));
 
     for (const file of files) {
         const command = require(`./commands/${file}`);
@@ -65,13 +62,13 @@ client.on("ready", () => {
 
 client.login(settings["client-secret"]);
 
-client.on("message", (msg) => {
+client.on("message", msg => {
     // Only react on messages not sent by the bot
     if (msg.author.id == botID) return;
 
     // Check if message contains a new token string
     if (msg.author.id === "267281854690754561" && msg.channel.type === "dm" && !msg.cleanContent.startsWith(prefix)) {
-        GoogleSheetHandler.setNewToken(msg.cleanContent).then((success) => {
+        GoogleSheetHandler.setNewToken(msg.cleanContent).then(success => {
             if (success) {
                 const validThru = new Date();
                 validThru.setDate(validThru.getDate() + 7);
@@ -127,7 +124,7 @@ client.on("message", (msg) => {
                     return msg.channel.send(reply);
                 }
 
-                if (commandRef.adminOnly && !msg.member.roles.cache.has("824234599936557097")) {
+                if (commandRef.adminOnly && !isAdmin(msg.member)) {
                     return msg.channel.send(`You do not have permission to use this command 🥴`);
                 }
 
@@ -179,24 +176,31 @@ client.on("message", (msg) => {
 // Handle reactions
 client.on("messageReactionAdd", async (messageReaction, user) => {
     // Only do something in feetpic channel
-    if (admins.includes(user.id) && messageReaction.message.channel.id === "846058921730113566") {
-        if (messageReaction.emoji.toString() === "❎") {
-            StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
-            const message = await messageReaction.message.channel.send("`Image removed by moderator`\n`no feet 🦶`");
-            await messageReaction.message.delete({ reason: "Not approved by admin." });
-            message.delete({ timeout: 10000, reason: "Not required any longer." });
-        }
+    if (messageReaction.message.channel.id === "846058921730113566") {
+        const { guild } = messageReaction.message;
+        const member = guild.members.cache.find(member => member.id === user.id);
 
-        if (messageReaction.emoji.toString() === "✅") {
-            messageReaction.message.reactions.removeAll();
+        if (isAdmin(member)) {
+            if (messageReaction.emoji.toString() === "❎") {
+                StatHandler.incrementStat(StatHandler.NON_FEET_RELATED_MESSAGES_DELETED);
+                const message = await messageReaction.message.channel.send(
+                    "`Image removed by moderator`\n`no feet 🦶`"
+                );
+                await messageReaction.message.delete({ reason: "Not approved by admin." });
+                message.delete({ timeout: 10000, reason: "Not required any longer." });
+            }
 
-            // Add rating to image
-            const rating = Helpers.getRandomInt(1, 10);
-            const emoji = getRatingEmoji(rating);
-            messageReaction.message.reply(`${rating}/10 🦶 ${emoji}`);
+            if (messageReaction.emoji.toString() === "✅") {
+                messageReaction.message.reactions.removeAll();
 
-            await messageReaction.message.react("🦶");
-            await messageReaction.message.react(emoji);
+                // Add rating to image
+                const rating = Helpers.getRandomInt(1, 10);
+                const emoji = getRatingEmoji(rating);
+                messageReaction.message.reply(`${rating}/10 🦶 ${emoji}`);
+
+                await messageReaction.message.react("🦶");
+                await messageReaction.message.react(emoji);
+            }
         }
     }
 });
@@ -314,4 +318,13 @@ function feetRelated(message) {
     }
 
     return false;
+}
+
+/**
+ * @param {GuildMember} member The member of a guild
+ * @returns {Boolean} If the member is an admin
+ */
+function isAdmin(member) {
+    // ID of the admin role on the angry server (5 angry emojis)
+    return member.roles.cache.has("824234599936557097");
 }

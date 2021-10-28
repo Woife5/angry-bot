@@ -1,25 +1,25 @@
 {
-  "name": "angry-bot",
-  "version": "4.8.0",
-  "description": "Angry Bot",
-  "main": "angry-bot.js",
-  "scripts": {
-    "test": "node angry-bot.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Woife5/angry-bot.git"
-  },
-  "author": "Wolfgang Schwendtbauer",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Woife5/angry-bot/issues"
-  },
-  "homepage": "https://github.com/Woife5/angry-bot#readme",
-  "dependencies": {
-    "@pm2/io": "^5.0.0",
-    "discord.js": "^12.5.3",
-    "googleapis": "^73.0.0",
-    "node-fetch": "^2.6.1"
-  }
+    "name": "angry-bot",
+    "version": "4.8.1",
+    "description": "Angry Bot",
+    "main": "angry-bot.js",
+    "scripts": {
+        "test": "node angry-bot.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Woife5/angry-bot.git"
+    },
+    "author": "Wolfgang Schwendtbauer",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Woife5/angry-bot/issues"
+    },
+    "homepage": "https://github.com/Woife5/angry-bot#readme",
+    "dependencies": {
+        "@pm2/io": "^5.0.0",
+        "discord.js": "^12.5.3",
+        "googleapis": "^73.0.0",
+        "node-fetch": "^2.6.1"
+    }
 }

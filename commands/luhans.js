@@ -110,7 +110,7 @@ module.exports = {
         // getRandomInt() returns a random integer between min (included) and max (also included)
         switch (getRandomInt(0, 2)) {
             // Case to get fun stuff
-            case 0:
+            case 0: {
                 // Calculate the time since the medien-t test.
                 let msSinceKlausur = Date.now() - medienKlausur.getTime();
                 const dSinceKlausur = Math.floor(msSinceKlausur / 1000 / 60 / 60 / 24);
@@ -136,20 +136,23 @@ module.exports = {
                     names[getRandomInt(0, names.length)]
                 } vergangen!\nEine rachsüchtige Erinnerung - ich hoffe, sie macht dich wütend.`;
                 break;
+            }
 
             // Case to get some proper medienDispositive!
-            case 1:
+            case 1: {
                 returnText =
                     "Hallo, ich bin " +
                     names[getRandomInt(0, names.length - 1)] +
                     " und das ist meine momentane, unverständliche Weisheit:\n\n" +
                     medienDispositive[getRandomInt(0, medienDispositive.length - 1)];
                 break;
+            }
 
             // Good to know when this exam ended
-            case 2:
+            case 2: {
                 returnText = funStuff[getRandomInt(0, funStuff.length - 1)];
                 break;
+            }
         }
 
         // Incremnt the luhans stat

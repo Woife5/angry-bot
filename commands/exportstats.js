@@ -5,7 +5,7 @@ module.exports = {
     description: "Export stats to google sheet",
     adminOnly: true,
     hidden: true,
-    execute(msg, args) {
+    execute() {
         StatHandler.exportStats();
     },
 };

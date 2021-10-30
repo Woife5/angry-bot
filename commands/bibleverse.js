@@ -11,9 +11,6 @@ module.exports = {
     hidden: false,
     usage: "<?book> <?chapter> <?verse>",
     async execute(msg, args) {
-        // This command is still in development.
-        // adminOnly and hidden will be removed later.
-
         let bookNR = null;
         let book = null;
 
@@ -85,25 +82,21 @@ module.exports = {
         verseText = chapter.verses[verseNR - 1].text;
 
         // Replace some words in the text with some random others
-        verseText = verseText.replaceAll("König ", "Paul ");
-        verseText = verseText.replaceAll("Gott ", "Paul ");
-        verseText = verseText.replaceAll("Christus ", "Felix ");
-        verseText = verseText.replaceAll("Mose ", "Valentin ");
-        verseText = verseText.replaceAll("Priester ", "Roman ");
-        verseText = verseText.replaceAll("Diener ", "Irmi ");
-        verseText = verseText.replaceAll("Jehovas ", "Angrys ");
-        verseText = verseText.replaceAll("Jesu Christi ", "Wolfgang Rader ");
-        verseText = verseText.replaceAll("Engel ", "Axel ");
-        verseText = verseText.replaceAll("Sünder ", "Thomas ");
+        verseText = verseText.replaceAll("König", "Paul");
+        verseText = verseText.replaceAll("Gott", "Paul");
+        verseText = verseText.replaceAll("Christus", "Felix");
+        verseText = verseText.replaceAll("Mose", "Valentin");
+        verseText = verseText.replaceAll("Priester", "Roman");
+        verseText = verseText.replaceAll("Diener", "Irmi");
+        verseText = verseText.replaceAll("Jehovas", "Angrys");
+        verseText = verseText.replaceAll("Jesu Christi", "Wolfgang Rader");
+        verseText = verseText.replaceAll("Engel", "Axel");
+        verseText = verseText.replaceAll("Sünder", "Thomas");
+        verseText = verseText.replaceAll("Gottseligkeit", "Angrylosigkeit (a.k.a. Freude)");
 
         // Send the verse
-        msg.channel.send(`${verseText}\n***${chapter.verses[verseNR - 1].name}***`);
-
-        // 1. Get a random verse from the Bible
-        // 2. Change some words for others
-        // 3. Send the new verse
-        // 4. add the ability to request a specific book/chapter/verse
-        // 5. Handle faulty inputs
-        // TO-DO pls dont judge me for this f***ing mess ^^
+        msg.channel.send(
+            `${verseText}\n***${chapter.verses[verseNR - 1].name}*** \`(${bookNR} ${chapterNR} ${verseNR})\``
+        );
     },
 };

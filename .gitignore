@@ -108,3 +108,8 @@ settings.json
 credentials.json
 angry-stats.json
 stats-and-cache
+
+# MacOS hidden files
+.DS_Store
+.AppleDouble
+.LSOverride

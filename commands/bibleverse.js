@@ -29,9 +29,14 @@ module.exports = {
             bookNR = getRandomInt(1, numberOfBooks);
         }
 
-        // Download the requested book
-        let result = await fetch(bibleAPI + bookNR + ".json");
-        book = await result.json();
+        try {
+            // Download the requested book
+            let result = await fetch(bibleAPI + bookNR + ".json");
+            book = await result.json();
+        } catch (error) {
+            msg.reply("Error while downloading book!");
+            return;
+        }
         let chapterNR = null;
         let chapter = null;
 

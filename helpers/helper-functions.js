@@ -31,4 +31,20 @@ module.exports = {
             seconds: seconds,
         };
     },
+
+    appendToErrorLog(error, modulename = "no module") {
+        const fs = require("fs");
+        const path = require("path");
+        const file = path.join(__dirname, "../logs/error.log");
+        const date = new Date();
+        const dateString = `${date.getFullYear()}-${
+            date.getMonth() + 1
+        }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        const errorString = `${dateString} [${modulename}] - ${error}\n\n`;
+        fs.appendFile(file, errorString, err => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    },
 };

@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const {
     promises: { readdir },
+    fstat,
 } = require("fs");
 const settings = require("./config/settings.json");
 const GoogleSheetHandler = require("./helpers/google-sheets-handler.js");
@@ -130,8 +131,8 @@ client.on("message", msg => {
 
                 commandRef.execute(msg, args);
             } catch (error) {
-                console.error(error);
                 msg.reply("An error occured 🥴");
+                Helpers.appendToErrorLog(error);
                 thrownErrors.inc();
             }
             return;
@@ -240,6 +241,7 @@ async function addReactions(msg, reactions) {
         try {
             await msg.react(reactions[i]);
         } catch (error) {
+            Helpers.appendToErrorLog(error);
             thrownErrors.inc();
         }
         openReactionsMetric.set(--openReactions);

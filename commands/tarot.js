@@ -4,7 +4,7 @@ const {
     promises: { readFile, writeFile },
 } = require("fs");
 const angrys = require("../config/angry-emojis.json");
-const { getRandomInt } = require("../helpers/helper-functions.js");
+const { getRandomInt, appendToErrorLog } = require("../helpers/helper-functions.js");
 
 const angryTarotCacheFile = "./stats-and-cache/angry-tarot-cache.json";
 
@@ -27,7 +27,7 @@ readFile(angryTarotCacheFile)
         });
     })
     .catch(err => {
-        console.error("Error reading tarot cache: " + JSON.stringify(err));
+        appendToErrorLog(JSON.stringify(err));
     });
 
 module.exports = {
@@ -77,7 +77,7 @@ module.exports = {
             }, 2000);
 
             writeFile(angryTarotCacheFile, JSON.stringify(angryTarot)).catch(err => {
-                console.error("Writing cache failed: " + JSON.stringify(err));
+                appendToErrorLog(JSON.stringify(err), "angry-tarot.js");
             });
         }
     },

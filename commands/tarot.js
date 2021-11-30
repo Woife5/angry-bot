@@ -60,7 +60,7 @@ module.exports = {
         } else {
             msg.reply(`Let me sense your angry...`);
             // Assign a new random daily angry emoji
-            const dailyAngry = getRandomInt(0, amountOfTarots);
+            const dailyAngry = getRandomInt(0, amountOfTarots - 1);
             angryTarot[msg.author.id] = { tarot: dailyAngry, timestamp: Date.now() };
 
             StatHandler.incrementTarotStat(msg.author.id, msg.author.username, dailyAngry);

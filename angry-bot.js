@@ -1,7 +1,16 @@
 const Discord = require("discord.js");
-const client = new Discord.Client();
+const client = new Discord.Client({
+    intents: [
+        Discord.Intents.FLAGS.DIRECT_MESSAGES,
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Discord.Intents.FLAGS.GUILD_INVITES,
+        Discord.Intents.FLAGS.GUILD_MESSAGES,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    ],
+});
 const {
-    promises: { readdir },
+    promises: { readdir, readFile },
     fstat,
 } = require("fs");
 const settings = require("./config/settings.json");
@@ -58,7 +67,7 @@ client.on("ready", () => {
     client.user.setActivity(`"${prefix}"`, { type: "LISTENING" });
 
     // Send update request every 5 days
-    client.setInterval(updateGoogleToken, 432000000);
+    setInterval(updateGoogleToken, 432000000);
 });
 
 client.login(settings["client-secret"]);
@@ -329,4 +338,64 @@ function feetRelated(message) {
 function isAdmin(member) {
     // ID of the admin role on the angry server (5 angry emojis)
     return member.roles.cache.has("824234599936557097");
+}
+
+//******************************************************
+//                 Tarot Reminder
+//******************************************************
+
+// Send tarot reminders every day at 18:00
+let timeUntilFirstReminder = new Date().setHours(18, 0, 0, 0) - Date.now();
+
+if (timeUntilFirstReminder < 0) {
+    timeUntilFirstReminder += 86400000;
+}
+
+setTimeout(() => {
+    setInterval(tarotReminder, 86400000);
+    tarotReminder();
+}, timeUntilFirstReminder);
+
+async function tarotReminder() {
+    try {
+        const allUsers = JSON.parse(await readFile("./stats-and-cache/tarot-reminders.json"));
+        const tarotCache = JSON.parse(await readFile("./stats-and-cache/angry-tarot-cache.json"));
+        const tarotReminders = [
+            "Hey! It's time to get your Tarot, you lazy ass! 🤣",
+            "How about some Tarot? You may like it!",
+            "?",
+            "Would you mind getting your Tarot? It's for a good cause!",
+        ];
+        let sendReminder = false;
+
+        const embed = new Discord.MessageEmbed()
+            .setTitle("Tarot Reminder")
+            .setDescription("It's time to take a tarot reading!")
+            .setColor("#e91a1a")
+            .setAuthor(
+                "Angry Bot",
+                "https://cdn.discordapp.com/attachments/314440449731592192/912125148474245221/angry.png"
+            );
+
+        let allMentions = "";
+        for (let i = 0; i < allUsers.length; i++) {
+            const user = allUsers[i];
+            // Only remind users who didn't get a tarot already
+            if (tarotCache[user]?.timestamp < new Date().setHours(0, 0, 0, 0)) {
+                const member = await client.users.fetch(user);
+                member.send(tarotReminders[Helpers.getRandomInt(0, tarotReminders.length - 1)]);
+                allMentions += `<@${user}> `;
+                sendReminder = true;
+            }
+        }
+
+        if (sendReminder) {
+            embed.addField("Get your Tarots everybody", allMentions);
+            const channel = client.channels.cache.get("824231030494986262"); // Main channel in angry server
+            channel.send({ embeds: [embed] });
+        }
+    } catch (error) {
+        Helpers.appendToErrorLog(error, "tarotReminder");
+        thrownErrors.inc();
+    }
 }

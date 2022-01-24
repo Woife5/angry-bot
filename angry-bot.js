@@ -362,9 +362,12 @@ async function tarotReminder() {
         const tarotCache = JSON.parse(await readFile("./stats-and-cache/angry-tarot-cache.json"));
         const tarotReminders = [
             "Hey! It's time to get your Tarot, you lazy ass! 🤣",
-            "How about some Tarot? You may like it!",
+            "How about some Tarot? You may like it! 🤯",
             "?",
-            "Would you mind getting your Tarot? It's for a good cause!",
+            "Would you mind getting your Tarot? It's for a good cause! 😲",
+            "Your Tarot is here! 🧙‍♀️",
+            "Your Tarot is still waiting for you to come and get it! 😫",
+            "I would like to offer you some fresh Tarot! 😇",
         ];
         let sendReminder = false;
 
@@ -383,7 +386,10 @@ async function tarotReminder() {
             // Only remind users who didn't get a tarot already
             if (tarotCache[user]?.timestamp < new Date().setHours(0, 0, 0, 0)) {
                 const member = await client.users.fetch(user);
-                member.send(tarotReminders[Helpers.getRandomInt(0, tarotReminders.length - 1)]);
+                member.send(tarotReminders[Helpers.getRandomInt(0, tarotReminders.length - 1)]).catch(() => {
+                    // Sending failed
+                    Helpers.appendToErrorLog(`DM to ${member.username} failed.`, "Tarot Reminder");
+                });
                 allMentions += `<@${user}> `;
                 sendReminder = true;
             }
@@ -392,7 +398,11 @@ async function tarotReminder() {
         if (sendReminder) {
             embed.addField("Get your Tarots everybody", allMentions);
             const channel = client.channels.cache.get("824231030494986262"); // Main channel in angry server
-            channel.send({ embeds: [embed] });
+            channel.send({ embeds: [embed] }).catch(err => {
+                // Sending failed
+                Helpers.appendToErrorLog(`Sending to reminder to channel failed.`, "Tarot Reminder");
+                Helpers.appendToErrorLog(JSON.stringify(err), "Tarot Reminder");
+            });
         }
     } catch (error) {
         Helpers.appendToErrorLog(error, "tarotReminder");

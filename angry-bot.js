@@ -368,6 +368,8 @@ async function tarotReminder() {
             "Your Tarot is here! 🧙‍♀️",
             "Your Tarot is still waiting for you to come and get it! 😫",
             "I would like to offer you some fresh Tarot! 😇",
+            "Hey there! I have a fresh Tarot for you! 🤠",
+            "Psst! Hey kid, do you want some Tarot? 🚚",
         ];
         let sendReminder = false;
 
@@ -386,9 +388,10 @@ async function tarotReminder() {
             // Only remind users who didn't get a tarot already
             if (tarotCache[user]?.timestamp < new Date().setHours(0, 0, 0, 0)) {
                 const member = await client.users.fetch(user);
-                member.send(tarotReminders[Helpers.getRandomInt(0, tarotReminders.length - 1)]).catch(() => {
+                member.send(tarotReminders[Helpers.getRandomInt(0, tarotReminders.length - 1)]).catch(err => {
                     // Sending failed
                     Helpers.appendToErrorLog(`DM to ${member.username} failed.`, "Tarot Reminder");
+                    Helpers.appendToErrorLog(JSON.stringify(err), "Tarot Reminder");
                 });
                 allMentions += `<@${user}> `;
                 sendReminder = true;
@@ -398,9 +401,9 @@ async function tarotReminder() {
         if (sendReminder) {
             embed.addField("Get your Tarots everybody", allMentions);
             const channel = client.channels.cache.get("824231030494986262"); // Main channel in angry server
-            channel.send({ embeds: [embed] }).catch(err => {
+            channel.send(embed).catch(err => {
                 // Sending failed
-                Helpers.appendToErrorLog(`Sending to reminder to channel failed.`, "Tarot Reminder");
+                Helpers.appendToErrorLog(`Sending reminder to channel failed.`, "Tarot Reminder");
                 Helpers.appendToErrorLog(JSON.stringify(err), "Tarot Reminder");
             });
         }

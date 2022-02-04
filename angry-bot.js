@@ -72,7 +72,7 @@ client.on("ready", () => {
 
 client.login(settings["client-secret"]);
 
-client.on("message", msg => {
+client.on("messageCreate", msg => {
     // Only react on messages not sent by the bot
     if (msg.author.id == botID) return;
 
@@ -98,7 +98,9 @@ client.on("message", msg => {
     }
 
     // Return if the bot is messaged privatley or not in the official angry discord
-    if (msg.channel.type !== "text" || msg.guild.id !== "824231029983412245") {
+    // The type in [] is nececary due to changes in the api
+    // This will be removed at some point
+    if (msg.channel.type in ["text", "GUILD_TEXT"] || msg.guild.id !== "824231029983412245") {
         if (msg.content.startsWith(prefix)) {
             msg.channel.send("https://discord.gg/pZrBRA75wz");
         }

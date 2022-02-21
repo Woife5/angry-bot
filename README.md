@@ -1,6 +1,6 @@
 # Angry Bot
 
-`Version 4.9.3`
+`Version 4.10.0`
 
 A discord bot that reacts on every message with a set amount of angry emojis (5 currently).
 
@@ -24,6 +24,7 @@ You can find the bot on the original and official Angry Discord Server:
 | `?angry luhans`        | Fun with Luhans; some recollections to the media-t exam                                                                                                                                                                                                                                     |
 | `?angry bibleverse`    | Get a random bible verse. Optionally a book, chapter and verse can be provided via arguments to get a specific verse. Usage: `?angry bibleverse` or `?angry bibleverse 3 2 1` where the first argument is the book, the second argument is the chapter and the third argument is the verse. |
 | `?angry tarotreminder` | Set a reminder to never forget your tarot again! Usage: `?angry tarotreminder enable` or `?angry tarotreminder disable`                                                                                                                                                                     |
+| `?angry catgirl`       | Gets a random catgirl image from the catgirl api                                                                                                                                                                                                                                            |
 
 ## Other functions of this bot
 

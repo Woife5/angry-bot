@@ -56,6 +56,7 @@ const StatHandler = {
     NON_FEET_RELATED_MESSAGES_DELETED: "non-feet-messages-deleted",
     YESNO_QUESTIONS_ANSWERED: "yesno-questions-answered",
     MCLUHAN: "mcluhan",
+    NEEKOS_REQUESTED: "neekos-requested",
 
     /**
      * Resets the toal amount of emojis sent

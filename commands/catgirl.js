@@ -17,7 +17,7 @@ module.exports = {
             const res = await fetch(randomUrl);
             const result = await res.json();
 
-            const randomWord = result.images[0].tags[getRandomInt(0, result.image.tags.length - 1)];
+            const randomWord = result.images[0].tags[getRandomInt(0, result.images[0].tags.length - 1)];
             const image = imageUrl + result.images[0].id;
 
             // TODO possibly alter the image and make it angry?

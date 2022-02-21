@@ -72,13 +72,13 @@ client.on("ready", () => {
 
 client.login(settings["client-secret"]);
 
-client.on("messageCreate", msg => {
+client.on("message", msg => {
     // Only react on messages not sent by the bot
     if (msg.author.id == botID) return;
 
     // Check if message contains a new token string
-    if (msg.author.id === "267281854690754561" && msg.channel.type === "dm" && !msg.cleanContent.startsWith(prefix)) {
-        GoogleSheetHandler.setNewToken(msg.cleanContent).then(success => {
+    if (msg.author.id === "267281854690754561" && msg.channel.type == "dm" && !msg.cleanContent.startsWith(prefix)) {
+	GoogleSheetHandler.setNewToken(msg.cleanContent).then(success => {
             if (success) {
                 const validThru = new Date();
                 validThru.setDate(validThru.getDate() + 7);
@@ -87,6 +87,7 @@ client.on("messageCreate", msg => {
                 msg.channel.send("Error setting new token!");
             }
         });
+	return;
     }
 
     // Return if the bot is in debug mode

@@ -96,7 +96,8 @@ module.exports = {
                     embed.setImage(angryTarotTexts[angryTarot[msg.author.id].tarot].files[0]);
                 }
 
-                msg.reply({ embeds: [embed] });
+		msg.reply(embed);
+                //msg.reply({ embeds: [embed] });
 
                 //let options = {};
                 //if (angryTarotTexts[dailyAngry].files) {

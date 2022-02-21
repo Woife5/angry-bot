@@ -1,6 +1,7 @@
 const StatHandler = require("../helpers/stat-handler.js");
 const { getRandomInt, appendToErrorLog } = require("../helpers/helper-functions");
 const fetch = require("node-fetch");
+const { MessageEmbed } = require("discord.js");
 
 const randomUrl = "https://nekos.moe/api/v1/random/image";
 const imageUrl = "https://nekos.moe/image/";
@@ -23,7 +24,7 @@ module.exports = {
             // TODO possibly alter the image and make it angry?
 
             // send answer
-            const embed = new Discord.MessageEmbed()
+            const embed = new MessageEmbed()
                 .setTitle("Catgirl")
                 .setDescription(`Look at this ${randomWord} catgirl i found *.*`)
                 .setColor("#e91a1a")

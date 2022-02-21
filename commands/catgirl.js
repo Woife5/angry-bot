@@ -23,7 +23,19 @@ module.exports = {
             // TODO possibly alter the image and make it angry?
 
             // send answer
-            msg.reply(`Look at this ${randomWord} catgirl i found *.*`, { files: [image] });
+            const embed = new Discord.MessageEmbed()
+                .setTitle("Catgirl")
+                .setDescription(`Look at this ${randomWord} catgirl i found *.*`)
+                .setColor("#e91a1a")
+                .setAuthor(
+                    "Angry Bot",
+                    "https://cdn.discordapp.com/attachments/314440449731592192/912125148474245221/angry.png"
+                )
+                .setImage(image);
+
+            msg.reply(embed).catch(err => {
+                appendToErrorLog(JSON.stringify(err), "catgirl");
+            });
 
             // increment stats
             StatHandler.incrementStat(StatHandler.NEEKOS_REQUESTED);

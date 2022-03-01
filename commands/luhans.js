@@ -158,8 +158,18 @@ module.exports = {
         // Incremnt the luhans stat
         StatHandler.incrementStat(StatHandler.MCLUHAN);
 
-        msg.channel.send(returnText);
-    },
+        const angryName = names[getRandomInt(0, names.length - 1)];
+
+        const embed = new MessageEmbed()
+                .setTitle(angryName)
+                .setDescription(`${returnText}`)
+                .setColor("#e91a1a")
+                .setAuthor(
+                    `Angry ${angryName}`,
+                    "https://cdn.discordapp.com/attachments/314440449731592192/912125148474245221/angry.png"
+                )
+                msg.reply(embed); 
+        },
 };
 
 /*

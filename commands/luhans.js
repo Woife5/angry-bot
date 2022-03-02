@@ -1,5 +1,6 @@
 const { getRandomInt } = require("../helpers/helper-functions.js");
 const StatHandler = require("../helpers/stat-handler.js");
+const { MessageEmbed } = require("discord.js");
 
 const medienKlausur = new Date("2021-07-02T11:00:00");
 
@@ -161,15 +162,15 @@ module.exports = {
         const angryName = names[getRandomInt(0, names.length - 1)];
 
         const embed = new MessageEmbed()
-                .setTitle(angryName)
-                .setDescription(`${returnText}`)
-                .setColor("#e91a1a")
-                .setAuthor(
-                    `Angry ${angryName}`,
-                    "https://cdn.discordapp.com/attachments/314440449731592192/912125148474245221/angry.png"
-                )
-                msg.reply(embed); 
-        },
+            .setTitle(angryName)
+            .setDescription(returnText)
+            .setColor("#e91a1a")
+            .setAuthor(
+                `Angry ${angryName}`,
+                "https://cdn.discordapp.com/attachments/314440449731592192/912125148474245221/angry.png"
+            );
+        msg.reply(embed);
+    },
 };
 
 /*

@@ -26,7 +26,7 @@ module.exports = {
             // send answer
             const embed = new MessageEmbed()
                 .setTitle("Catgirl")
-                .setDescription(`Look at this ${randomWord} catgirl i found \*-\*`)
+                .setDescription(`Look at this ${randomWord} catgirl i found uwu`)
                 .setColor("#e91a1a")
                 .setAuthor(
                     "Angry Bot",

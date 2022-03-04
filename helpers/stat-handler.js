@@ -57,6 +57,7 @@ const StatHandler = {
     YESNO_QUESTIONS_ANSWERED: "yesno-questions-answered",
     MCLUHAN: "mcluhan",
     NEEKOS_REQUESTED: "neekos-requested",
+    RUSSIA_SANCTIONS: "russia-sanctions",
 
     /**
      * Resets the toal amount of emojis sent

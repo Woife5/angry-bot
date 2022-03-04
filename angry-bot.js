@@ -78,7 +78,7 @@ client.on("message", msg => {
 
     // Check if message contains a new token string
     if (msg.author.id === "267281854690754561" && msg.channel.type == "dm" && !msg.cleanContent.startsWith(prefix)) {
-	GoogleSheetHandler.setNewToken(msg.cleanContent).then(success => {
+        GoogleSheetHandler.setNewToken(msg.cleanContent).then(success => {
             if (success) {
                 const validThru = new Date();
                 validThru.setDate(validThru.getDate() + 7);
@@ -87,7 +87,7 @@ client.on("message", msg => {
                 msg.channel.send("Error setting new token!");
             }
         });
-	return;
+        return;
     }
 
     // Return if the bot is in debug mode
@@ -160,6 +160,19 @@ client.on("message", msg => {
     ) {
         msg.reply(`AAAAH ROMAN! ${angrys[0]} ${angrys[0]} ${angrys[0]}\n:clock10: :rolling_eyes:`);
         StatHandler.incrementStat(StatHandler.DIVOTKEY_REACTIONS);
+    }
+
+    // Sanctoin russia
+    if (
+        msg.cleanContent.toLocaleLowerCase().includes("russia") ||
+        msg.cleanContent.toLocaleLowerCase().includes("russland") ||
+        msg.cleanContent.toLocaleLowerCase().includes("moskau") ||
+        msg.cleanContent.toLocaleLowerCase().includes("putin")
+    ) {
+        msg.reply(`Украина является независимым суверенным государством.`).then(msg => {
+            msg.react("🇺🇦");
+        });
+        StatHandler.incrementStat(StatHandler.RUSSIA_SANCTIONS);
     }
 
     // Check if the message needs to be censored

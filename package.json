@@ -1,6 +1,6 @@
 {
     "name": "angry-bot",
-    "version": "4.10.6",
+    "version": "4.10.7",
     "description": "Angry Bot",
     "main": "angry-bot.js",
     "scripts": {

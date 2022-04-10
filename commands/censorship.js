@@ -60,12 +60,12 @@ module.exports = {
     censor(msg) {
         let hasToBeCensord = false;
         let cencoredContent = msg.content.replaceAll("\\", "\\ ");
-        const messageContent = msg.content.toLowerCase();
 
         censordEmoji.forEach(emoji => {
             if (messageContent.includes(emoji)) {
                 hasToBeCensord = true;
-                cencoredContent = cencoredContent.replaceAll(emoji, "`CENSORED` ");
+                const replaceRegex = new RegExp(emoji, "ig");
+                cencoredContent = cencoredContent.replace(replaceRegex, "`CENSORED` ");
             }
         });
 

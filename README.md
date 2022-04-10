@@ -1,6 +1,6 @@
 # Angry Bot
 
-`Version 4.10.5`
+`Version 4.10.6`
 
 A discord bot that reacts on every message with a set amount of angry emojis (5 currently).
 

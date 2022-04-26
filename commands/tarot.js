@@ -32,7 +32,7 @@ module.exports = {
     name: "tarot",
     description: "Get your daily angry tarot",
     execute(msg) {
-        const amountOfTarots = 150;
+        const amountOfTarots = 172;
 
         // If the user has already a tarot cached that was read today, be angry with him
         if (

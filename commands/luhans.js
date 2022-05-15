@@ -23,6 +23,20 @@ const names = [
     "McWauWauWauWauWau",
     "McUwUwUwU",
     "McHagUst",
+    "McRagUst",
+    "McWhipItGood",
+    "McSauceKnowledge",
+    "McSauceMakin",
+    "McSauceKnowHow",
+    "McSauce Connection",
+    "McSauce & Cheese",
+    "McSauceNetwork",
+    "McSaucePower",
+    "McSauce.com",
+    "McSauceDomain",
+    "McSauceWeb",
+    "The McSauce Page",
+    "McSauce on the Web",
 ];
 
 // This needs to get into a json at some point

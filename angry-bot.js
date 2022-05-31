@@ -162,6 +162,14 @@ client.on("message", msg => {
         StatHandler.incrementStat(StatHandler.DIVOTKEY_REACTIONS);
     }
 
+    // Medientheorie
+    if (
+        msg.cleanContent.toLocaleLowerCase().includes("medien") &&
+        msg.cleanContent.toLocaleLowerCase().includes("theorie") 
+    ) {
+        msg.reply(`MEDIENTHEORIE :heart_eyes::heart_eyes::heart_eyes:`);
+    }
+
     // Sanctoin russia
     if (
         msg.cleanContent.toLocaleLowerCase().includes("russia") ||
